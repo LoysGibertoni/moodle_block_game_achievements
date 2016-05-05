@@ -38,7 +38,54 @@ function generate_events_list($showeventname = false)
 	return $eventsarray;
 }
 
+function satisfies_conditions($conditions, $courseid, $userid)
+{
+	global $DB;
+	
+	if(isset($conditions))
+	{
+		$tree = new \core_availability\tree(json_decode($conditions));
+		$course = $DB->get_record('course', array('id' => $courseid));
+		$info = new conditions_info($course);
+		$result = $tree->check_available(false, $info, true, $userid);
+		return $result->is_available();
+	}
+	
+	return true;
+}
+
 function is_student($userid)
 {
 	return user_has_role_assignment($userid, 5);
+}
+
+class conditions_info extends \core_availability\info
+{
+    public function __construct($course = null)
+	{
+        global $SITE;
+        if (!$course) {
+            $course = $SITE;
+        }
+        parent::__construct($course, true, null);
+    }
+
+    protected function get_thing_name()
+	{
+        return 'Conditions';
+    }
+
+    public function get_context()
+	{
+        return \context_course::instance($this->get_course()->id);
+    }
+
+    protected function get_view_hidden_capability()
+	{
+        return 'moodle/course:viewhiddensections';
+    }
+
+    protected function set_in_database($availability)
+	{
+    }
 }

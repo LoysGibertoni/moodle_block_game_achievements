@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/blocks/game_achievements/lib.php');
+require_once($CFG->dirroot . '/blocks/game_achievements/lib.php');
 
 class block_game_achievements extends block_base
 {
@@ -70,7 +70,12 @@ class block_game_achievements extends block_base
 					$unlocked_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
 				}
 				else if(!isset($achievements_text_list[$achievement->event]))
-				{				
+				{
+					if(!satisfies_conditions($achievement->conditions, $this->page->course->id, $USER->id))
+					{
+						continue;
+					}
+					
 					$sql = 'SELECT count(*)
 								FROM {achievements_events_log} a
 									INNER JOIN {logstore_standard_log} l ON l.id = a.logid

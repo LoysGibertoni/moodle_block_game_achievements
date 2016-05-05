@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/blocks/game_achievements/lib.php');
+require_once($CFG->dirroot . '/blocks/game_achievements/lib.php');
 
 class block_game_achievements_helper {
 
@@ -41,6 +41,11 @@ class block_game_achievements_helper {
 		
 		foreach($achievements as $achievement)
 		{
+			if(!satisfies_conditions($achievement->conditions, $event->courseid, $event->userid))
+			{
+				continue;
+			}
+			
 			$blockcontextid = $DB->get_field('block_instances', 'parentcontextid', array('id' => $achievement->blockinstanceid));
 			if(!$blockcontextid) // If block was deleted
 			{
