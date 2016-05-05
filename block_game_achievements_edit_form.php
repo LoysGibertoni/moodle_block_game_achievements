@@ -57,9 +57,17 @@ class block_game_achievements_edit_form extends moodleform {
 		$mform->setType('description', PARAM_TEXT);
 		$mform->setDefault('description', $achievement->description);
 		
+		// Conditions
+		$mform->addElement('header', 'availabilityconditionsheader', get_string('restrictaccess', 'availability'));
+		$mform->addElement('textarea', 'availabilityconditionsjson', get_string('accessrestrictions', 'availability'));
+		$mform->setDefault('availabilityconditionsjson', $achievement->conditions);
+		\core_availability\frontend::include_all_javascript($COURSE, null);
+		
 		// Hidden elements
 		$mform->addElement('hidden', 'courseid');
+		$mform->setType('courseid', PARAM_INT);
 		$mform->addElement('hidden', 'achievementid');
+		$mform->setType('achievementid', PARAM_INT);
 		
 		$this->add_action_buttons(true, get_string('achievementedit_submit', 'block_game_achievements'));
     }

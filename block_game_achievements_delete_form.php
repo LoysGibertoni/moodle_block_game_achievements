@@ -34,7 +34,9 @@ class block_game_achievements_delete_form extends moodleform
 		$mform->addElement('html', get_string('achievementdelete_message', 'block_game_achievements'));
 		
 		$mform->addElement('hidden', 'courseid');
+		$mform->setType('courseid', PARAM_INT);
 		$mform->addElement('hidden', 'achievementid');
+		$mform->setType('achievementid', PARAM_INT);
 		
 		$this->add_action_buttons(true, get_string('achievementdelete_submit', 'block_game_achievements'));
     }	

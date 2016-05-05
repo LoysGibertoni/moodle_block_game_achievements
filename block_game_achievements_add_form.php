@@ -45,9 +45,15 @@ class block_game_achievements_add_form extends moodleform {
 		$mform->addElement('text', 'description', get_string('achievementadd_descriptiontext', 'block_game_achievements'));
 		$mform->setType('description', PARAM_TEXT);
 		
+		$mform->addElement('header', 'availabilityconditionsheader', get_string('restrictaccess', 'availability'));
+		$mform->addElement('textarea', 'availabilityconditionsjson', get_string('accessrestrictions', 'availability'));
+		\core_availability\frontend::include_all_javascript($COURSE, null);
+		
 		// Hidden elements
 		$mform->addElement('hidden', 'blockinstanceid');
+		$mform->setType('blockinstanceid', PARAM_INT);
 		$mform->addElement('hidden', 'courseid');
+		$mform->setType('courseid', PARAM_INT);
 		
 		$this->add_action_buttons(true, get_string('achievementadd_submit', 'block_game_achievements'));
     }

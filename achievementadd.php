@@ -63,6 +63,7 @@ else if($data = $addform->get_data())
 	$record = new stdClass();
 	$record->event = $data->event;
 	$record->times = $data->times;
+	$record->conditions = $data->availabilityconditionsjson;
 	$record->description = empty($data->description) ? null : $data->description;
 	$record->blockinstanceid = $blockinstanceid;
 	$record->deleted = 0;
