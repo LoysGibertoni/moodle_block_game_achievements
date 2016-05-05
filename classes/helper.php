@@ -30,7 +30,7 @@ class block_game_achievements_helper {
 
 	public static function observer(\core\event\base $event)
 	{
-        /*global $DB;
+        global $DB;
 		
         if(!is_student($event->userid))
 		{
@@ -41,7 +41,80 @@ class block_game_achievements_helper {
 		
 		foreach($achievements as $achievement)
 		{
-			print_object('Aqui');
-		}*/
+			$blockcontextid = $DB->get_field('block_instances', 'parentcontextid', array('id' => $achievement->blockinstanceid));
+			if(!$blockcontextid) // If block was deleted
+			{
+				continue;
+			}
+			
+			// Descobrir se precisa verificar o courseid
+			$blockcontext = context::instance_by_id($blockcontextid);
+			$context = context::instance_by_id($event->contextid);
+			if(strpos($context->path, $blockcontext->path) !== 0) // Se o o contexto atual não estiver na hierarquia do contexto do bloco
+			{
+				continue;
+			}
+			
+			$unlocked_achievement = $DB->record_exists('achievements_log', array('userid' => $event->userid, 'achievementid' => $achievement->id));
+			if($unlocked_achievement)
+			{
+				continue;
+			}
+			
+			$manager = get_log_manager();
+			$selectreaders = $manager->get_readers('\core\log\sql_reader');
+			if ($selectreaders) {
+				$reader = reset($selectreaders);
+			}
+			$selectwhere = "eventname = :eventname
+				AND component = :component
+				AND action = :action
+				AND target = :target
+				AND crud = :crud
+				AND edulevel = :edulevel
+				AND contextid = :contextid
+				AND contextlevel = :contextlevel
+				AND contextinstanceid = :contextinstanceid
+				AND userid = :userid 
+				AND anonymous = :anonymous
+				AND timecreated = :timecreated";
+			$params['eventname'] = $event->eventname;
+			$params['component'] = $event->component;
+			$params['action'] = $event->action;
+			$params['target'] = $event->target;
+			$params['crud'] = $event->crud;
+			$params['edulevel'] = $event->edulevel;
+			$params['contextid'] = $event->contextid;
+			$params['contextlevel'] = $event->contextlevel;
+			$params['contextinstanceid'] = $event->contextinstanceid;
+			$params['userid'] = $event->userid;
+			$params['anonymous'] = $event->anonymous;
+			$params['timecreated'] = $event->timecreated;
+
+			$logid = $reader->get_events_select($selectwhere, $params, '', 0, 0);
+			$logid = array_keys($logid)[0];
+			
+			$record = new stdClass();
+			$record->logid = $logid;
+			$record->achievementid = $achievement->id;
+			$DB->insert_record('achievements_events_log', $record);
+			
+			$sql = 'SELECT count(*)
+						FROM {achievements_events_log} a
+							INNER JOIN {logstore_standard_log} l ON l.id = a.logid
+						WHERE l.userid = :userid
+							AND a.achievementid = :achievementid';
+			$params['userid'] = $event->userid;
+			$params['achievementid'] = $achievement->id;
+			
+			$times = $DB->count_records_sql($sql, $params);
+			if($times == $achievement->times)
+			{
+				$record = new stdClass();
+				$record->achievementid = $achievement->id;
+				$record->userid = $event->userid;
+				$DB->insert_record('achievements_log', $record);
+			}
+		}
     }
 }

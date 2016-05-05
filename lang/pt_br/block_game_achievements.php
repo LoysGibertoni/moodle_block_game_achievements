@@ -50,3 +50,6 @@ $string['achievementedit_submit'] = 'Salvar alterações';
 $string['achievementdelete_header'] = 'Remoção de conquista';
 $string['achievementdelete_message'] = 'Você tem certeza que deseja remover esta conquista?';
 $string['achievementdelete_submit'] = 'Remover';
+$string['block_times'] = 'vezes';
+$string['block_unlocked_achievements'] = 'Conquistas desbloqueadas';
+$string['block_achievements'] = 'Conquistas';

@@ -53,7 +53,48 @@ class block_game_achievements extends block_base
 		
 		if(is_student($USER->id)) // If user is a student
 		{
-			$this->content->text = 'Hello';
+			$this->content->text = '';
+			
+			$achievements_text_list = array();
+			$unlocked_achievements_text_list = array();
+			
+			$events = generate_events_list();
+			$achievements = $DB->get_records('achievements', array('blockinstanceid' => $this->instance->id, 'deleted' => 0), 'event, times');
+			foreach($achievements as $achievement)
+			{
+				$unlocked_achievement = $DB->record_exists('achievements_log', array('userid' => $USER->id, 'achievementid' => $achievement->id));
+				
+				if($unlocked_achievement)
+				{
+					$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
+					$unlocked_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+				}
+				else if(!isset($achievements_text_list[$achievement->event]))
+				{				
+					$sql = 'SELECT count(*)
+								FROM {achievements_events_log} a
+									INNER JOIN {logstore_standard_log} l ON l.id = a.logid
+								WHERE l.userid = :userid
+									AND a.achievementid = :achievementid';
+					$params['userid'] = $USER->id;
+					$params['achievementid'] = $achievement->id;
+					
+					$times = $DB->count_records_sql($sql, $params);
+					
+					$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
+					$achievements_text_list[$achievement->event] = '<li>' . $description . ' ' . $times . '/' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+				}
+			}
+			
+			if(!empty($achievements_text_list))
+			{
+				$this->content->text .= '<p>' . get_string('block_achievements', 'block_game_achievements') . ':<ul>' . implode($achievements_text_list) . '</ul></p>';
+			}
+			if(!empty($unlocked_achievements_text_list))
+			{
+				$this->content->text .= '<p>' . get_string('block_unlocked_achievements', 'block_game_achievements') . ':<ul>' . implode($unlocked_achievements_text_list) . '</ul></p>';
+			}
+			
 			$this->content->footer = '';
 		}
 		else // If user has any other role
