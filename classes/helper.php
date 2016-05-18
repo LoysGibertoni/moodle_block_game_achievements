@@ -41,7 +41,7 @@ class block_game_achievements_helper {
 		
 		foreach($achievements as $achievement)
 		{
-			if(!satisfies_conditions($achievement->conditions, $event->courseid, $event->userid))
+			if(!(satisfies_conditions($achievement->conditions, $event->courseid, $event->userid) && satisfies_block_conditions($achievement, $event->userid)))
 			{
 				continue;
 			}

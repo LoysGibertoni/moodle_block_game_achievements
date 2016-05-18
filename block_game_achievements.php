@@ -59,7 +59,7 @@ class block_game_achievements extends block_base
 			$unlocked_achievements_text_list = array();
 			
 			$events = generate_events_list();
-			$achievements = $DB->get_records('achievements', array('blockinstanceid' => $this->instance->id, 'deleted' => 0), 'event, times');
+			$achievements = get_achievements($this->instance->id);
 			foreach($achievements as $achievement)
 			{
 				$unlocked_achievement = $DB->record_exists('achievements_log', array('userid' => $USER->id, 'achievementid' => $achievement->id));
@@ -71,7 +71,7 @@ class block_game_achievements extends block_base
 				}
 				else if(!isset($achievements_text_list[$achievement->event]))
 				{
-					if(!satisfies_conditions($achievement->conditions, $this->page->course->id, $USER->id))
+					if(!(satisfies_conditions($achievement->conditions, $this->page->course->id, $USER->id) && satisfies_block_conditions($achievement, $USER->id)))
 					{
 						continue;
 					}

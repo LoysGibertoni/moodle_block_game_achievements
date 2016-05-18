@@ -18,7 +18,7 @@
  * Achievements block link add form definition.
  *
  * @package    block_game_achievements
- * @copyright  20016 Loys Henrique Saccomano Gibertoni
+ * @copyright  2016 Loys Henrique Saccomano Gibertoni
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,31 +41,33 @@ class block_game_achievements_linkadd_form extends moodleform
         $mform->addElement('header','displayinfo', get_string('linkadd_header', 'block_game_achievements'));
 
 		$block_instances = array();
-		$blocks_info = $DB->get_records('block_instances', array('blockname' => 'game_points'));
+		$blocks_info = $DB->get_records('block_instances', array('blockname' => 'game_achievements'));
 		$block_context_level = context::instance_by_id($blocks_info[$this->blockid]->parentcontextid)->contextlevel;
 		foreach($blocks_info as $info)
 		{
-			$instance = block_instance('game_points', $info);
+			$instance = block_instance('game_achievements', $info);
 			
 			$instance_context_level = context::instance_by_id($instance->instance->parentcontextid)->contextlevel;
 			if($block_context_level > $instance_context_level || $instance->instance->id == $this->blockid)
 			{
 				continue;
 			}
-			if($DB->count_records('points_link', array('blockinstanceid' => $this->blockid, 'accfromblockinstanceid' => $instance->instance->id)) > 0)
+			if($DB->count_records('achievements_link', array('blockinstanceid' => $this->blockid, 'targetblockinstanceid' => $instance->instance->id)) > 0)
 			{
 				continue;
 			}
 			
 			$block_instances[$instance->instance->id] = $instance->title;
 		}
-		$mform->addElement('select', 'accfromblockinstanceid', 'Acumular pontos de', $block_instances, null);
-		$mform->addRule('accfromblockinstanceid', null, 'required', null, 'client');
+		$mform->addElement('select', 'targetblockinstanceid',  get_string('linkadd_targettext', 'block_game_achievements'), $block_instances, null);
+		$mform->addRule('targetblockinstanceid', null, 'required', null, 'client');
 		
-		$mform->addElement('hidden', 'blockid');
+		$mform->addElement('hidden', 'blockinstanceid');
+		$mform->setType('blockinstanceid', PARAM_INT);
 		$mform->addElement('hidden', 'courseid');
+		$mform->setType('courseid', PARAM_INT);
 		
-		$this->add_action_buttons();
+		$this->add_action_buttons(true, get_string('linkadd_submit', 'block_game_achievements'));
     }
 }
 

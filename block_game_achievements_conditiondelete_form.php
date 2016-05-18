@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
  
 /**
- * Achievements block link delete form definition.
+ * Achievements block delete condition form definition.
  *
  * @package    block_game_achievements
  * @copyright  2016 Loys Henrique Saccomano Gibertoni
@@ -24,22 +24,20 @@
 
 require_once("{$CFG->libdir}/formslib.php");
  
-class block_game_achievements_linkdelete_form extends moodleform
+class block_game_achievements_conditiondelete_form extends moodleform
 {
  
     function definition()
 	{
 		$mform =& $this->_form;
-        $mform->addElement('header','displayinfo', get_string('linkdelete_header', 'block_game_achievements'));
+        $mform->addElement('header','displayinfo', get_string('conditiondeleteheading', 'block_game_achievements'));
 		
-		$mform->addElement('html', get_string('linkdelete_message', 'block_game_achievements'));
+		$mform->addElement('html', get_string('conditiondeletemessage', 'block_game_achievements'));
 		
 		$mform->addElement('hidden', 'courseid');
-		$mform->setType('courseid', PARAM_INT);
-		$mform->addElement('hidden', 'linkid');
-		$mform->setType('linkid', PARAM_INT);
+		$mform->addElement('hidden', 'conditionid');
 		
-		$this->add_action_buttons(true, get_string('linkdelete_submit', 'block_game_achievements'));
+		$this->add_action_buttons(true, get_string('conditiondeletebutton', 'block_game_achievements'));
     }
 	
 }

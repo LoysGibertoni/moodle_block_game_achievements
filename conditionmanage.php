@@ -15,23 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
  
 /**
- * Add Achievements block link page.
+ * Points system conditions management page.
  *
  * @package    block_game_achievements
- * @copyright  2016 Loys Henrique Saccomano Gibertoni
+ * @copyright  20016 Loys Henrique Saccomano Gibertoni
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 global $DB, $OUTPUT, $PAGE, $USER;
  
 require_once('../../config.php');
-require_once('block_game_achievements_linkadd_form.php');
+require_once('block_game_achievements_conditionmanage_form.php');
  
 global $DB;
  
 // Required variables
 $courseid = required_param('courseid', PARAM_INT);
-$blockinstanceid = required_param('blockinstanceid', PARAM_INT);
+$achievementid = required_param('achievementid', PARAM_INT);
  
 // Optional variables
 $id = optional_param('id', 0, PARAM_INT);
@@ -42,45 +42,41 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
  
 require_login($course);
  
-$PAGE->set_url('/blocks/game_achievements/linkadd.php', array('id' => $courseid));
+$PAGE->set_url('/blocks/game_achievements/conditionmanage.php', array('id' => $courseid));
 $PAGE->set_pagelayout('standard');
-$PAGE->set_heading(get_string('linkadd_header', 'block_game_achievements')); 
-$PAGE->set_title(get_string('linkadd_header', 'block_game_achievements'));
+$PAGE->set_heading(get_string('conditionmanage_header', 'block_game_achievements')); 
+$PAGE->set_title(get_string('conditionmanage_header', 'block_game_achievements')); 
 
 $settingsnode = $PAGE->settingsnav->add(get_string('configpage_nav', 'block_game_achievements'));
-$addurl = new moodle_url('/blocks/game_achievements/linkadd.php', array('id' => $id, 'courseid' => $courseid, 'blockinstanceid' => $blockinstanceid));
-$addnode = $settingsnode->add(get_string('linkadd_header', 'block_game_achievements'), $addurl);
-$addnode->make_active();
+$editurl = new moodle_url('/blocks/game_achievements/conditionmanage.php', array('id' => $id, 'courseid' => $courseid, 'achievementid' => $achievementid));
+$editnode = $settingsnode->add(get_string('conditionmanage_header', 'block_game_achievements'), $editurl);
+$editnode->make_active();
 
-$addform = new block_game_achievements_linkadd_form($blockinstanceid);
-if($addform->is_cancelled())
+$manageform = new block_game_achievements_conditionmanage_form($achievementid);
+if($manageform->is_cancelled())
 {
-    $url = new moodle_url('/course/view.php', array('id' => $courseid, 'sesskey' => sesskey(), 'bui_editid' => $blockinstanceid));
+	$url = new moodle_url('/course/view.php', array('id' => $courseid));
     redirect($url);
 }
-else if($data = $addform->get_data())
+else if($data = $manageform->get_data())
 {
 	$record = new stdClass();
-	$record->blockinstanceid = $blockinstanceid;
-	$record->targetblockinstanceid = $data->targetblockinstanceid;
-	$linkid = $DB->insert_record('achievements_link', $record);
+	$record->id = $achievementid;
+	$record->connective = $data->connective;
 	
-	$record = new stdClass();
-	$record->linkid = $linkid;
-	$record->processorid = $USER->id;
-	$DB->insert_record('achievements_link_processor', $record);
+	$DB->update_record('achievements', $record);
 	
-    $url = new moodle_url('/course/view.php', array('id' => $courseid, 'sesskey' => sesskey(), 'bui_editid' => $blockinstanceid));
+	$url = new moodle_url('/course/view.php', array('id' => $courseid));
     redirect($url);
 }
 else
 {
-	$toform['blockinstanceid'] = $blockinstanceid;
+	$toform['achievementid'] = $achievementid;
 	$toform['courseid'] = $courseid;
-	$addform->set_data($toform);
+	$manageform->set_data($toform);
 	$site = get_site();
 	echo $OUTPUT->header();
-	$addform->display();
+	$manageform->display();
 	echo $OUTPUT->footer();
 }
 

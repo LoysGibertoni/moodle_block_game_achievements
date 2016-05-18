@@ -54,9 +54,141 @@ function satisfies_conditions($conditions, $courseid, $userid)
 	return true;
 }
 
+function satisfies_block_conditions($achievement, $userid)
+{
+	global $DB;
+	$achievement_conditions = $DB->get_records('achievements_condition', array('achievementid' => $achievement->id));
+	$satisfies_conditions = $achievement->connective == AND_CONNECTIVE ? true : false;
+	if(empty($achievement_conditions))
+	{
+		$satisfies_conditions = true;
+	}
+	else
+	{
+		foreach($achievement_conditions as $achievement_condition)
+		{
+			if($achievement_condition->type == 0) // Restrição por pontos
+			{
+				$user_points = null;
+				if(isset($achievement_condition->prblockid)) // Se a restrição for por pontos no bloco
+				{
+					$user_points = get_points($achievement_condition->prblockid, $userid);
+				}
+				else // Se a restrição for por pontos em um sistema de pontos específico
+				{
+					$user_points = get_points_system_points($achievement_condition->prpointsystemid, $userid);
+				}
+				
+				
+				if(($achievement_condition->properator == EQUAL && $user_points == $achievement_condition->prpoints)
+					|| ($achievement_condition->properator == GREATER && $user_points > $achievement_condition->prpoints)
+					|| ($achievement_condition->properator == LESS && $user_points < $achievement_condition->prpoints)
+					|| ($achievement_condition->properator == EQUALORGREATER && $user_points >= $achievement_condition->prpoints)
+					|| ($achievement_condition->properator == EQUALORLESS && $user_points <= $achievement_condition->prpoints)
+					|| ($achievement_condition->properator == BETWEEN && ($user_points >= $achievement_condition->prpoints || $user_points <= $achievement_condition->prpointsbetween))) // Se satisfaz a condição
+				{
+					if($achievement->connective == OR_CONNECTIVE) // E se o conectivo for OR
+					{
+						$satisfies_conditions = true;
+						break;
+					}
+				}
+				else // Se não satisfaz a condição
+				{
+					if($achievement->connective == AND_CONNECTIVE) // E se o conectivo for AND
+					{
+						$satisfies_conditions = false;
+						break;
+					}
+				}
+			}
+			else // Restrição por conteúdo desbloqueado
+			{
+				$sql = "SELECT count(u.id) as times
+					FROM
+						{content_unlock_log} u
+					INNER JOIN {logstore_standard_log} l ON u.logid = l.id
+					WHERE l.userid = :userid
+						AND  u.unlocksystemid = :unlocksystemid
+					GROUP BY l.userid";
+				$params['unlocksystemid'] = $achievement_condition->urunlocksystemid;
+				$params['userid'] = $userid;
+				
+				$times = $DB->get_field_sql($sql, $params);
+
+				if(!isset($times))
+				{
+					$times = 0;
+				}
+				
+				if(($achievement_condition->urmust && $times > 0) || (!$achievement_condition->urmust && $times == 0)) // Se satisfaz a condição
+				{
+					if($achievement->connective == OR_CONNECTIVE) // E se o conectivo for OR
+					{
+						$satisfies_conditions = true;
+						break;
+					}
+				}
+				else // Se não satisfaz a condição
+				{
+					if($achievement->connective == AND_CONNECTIVE) // E se o conectivo for AND
+					{
+						$satisfies_conditions = false;
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	return $satisfies_conditions;
+}
+
 function is_student($userid)
 {
 	return user_has_role_assignment($userid, 5);
+}
+
+function get_achievements($blockinstanceid)
+{
+	global $DB;
+
+	$achievements = $DB->get_records('achievements', array('blockinstanceid' => $blockinstanceid, 'deleted' => 0));
+	$links = $DB->get_records('achievements_link', array('blockinstanceid' => $blockinstanceid), '', 'targetblockinstanceid');
+	
+	foreach($links as $link)
+	{
+		$link_achievements = get_achievements($link->targetblockinstanceid);
+		foreach($link_achievements as $link_achievement)
+		{
+			$achievements[] = $link_achievement;
+		}
+	}
+	
+	usort($achievements, function ($a, $b) {
+		if($a->event < $b->event)
+		{
+			return -1;
+		}
+		else if($a->event > $b->event)
+		{
+			return 1;
+		}
+		else if($a->times < $b->times)
+		{
+			return -1;
+		}
+		else if($a->times > $b->times)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	});
+	
+	return $achievements;
 }
 
 class conditions_info extends \core_availability\info

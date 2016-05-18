@@ -55,6 +55,7 @@ class block_game_achievements_edit_form extends block_edit_form {
 							<th>' . get_string('configpage_eventtableheader', 'block_game_achievements') . '</th>
 							<th>' . get_string('configpage_timestableheader', 'block_game_achievements') . '</th>
 							<th>' . get_string('configpage_descriptiontableheader', 'block_game_achievements') . '</th>
+							<th>' . get_string('configpage_manageconditionstableheader', 'block_game_achievements') . '</th>
 							<th>' . get_string('configpage_edittableheader', 'block_game_achievements') . '</th>
 							<th>' . get_string('configpage_deletetableheader', 'block_game_achievements') . '</th>
 						</tr>';
@@ -62,12 +63,14 @@ class block_game_achievements_edit_form extends block_edit_form {
 			{
 				$achievement_edit_url = new moodle_url('/blocks/game_achievements/achievementedit.php', array('courseid' => $COURSE->id, 'achievementid' => $achievement->id));
 				$achievement_delete_url = new moodle_url('/blocks/game_achievements/achievementdelete.php', array('courseid' => $COURSE->id, 'achievementid' => $achievement->id));
+				$condition_manage_url = new moodle_url('/blocks/game_achievements/conditionmanage.php', array('courseid' => $COURSE->id, 'achievementid' => $achievement->id));
 				
 				$html .= '<tr>
 							<td>' . $achievement->id . '</td>
 							<td>' . $eventsarray[$achievement->event] . '</td>
 							<td>' . $achievement->times . '</td>
 							<td>' . $achievement->description . '</td>
+							<td>' . html_writer::link($condition_manage_url, get_string('configpage_manageconditionstableheader', 'block_game_achievements')) . '</td>
 							<td>' . html_writer::link($achievement_edit_url, get_string('configpage_edittableheader', 'block_game_achievements')) . '</td>
 							<td>' . html_writer::link($achievement_delete_url, get_string('configpage_deletetableheader', 'block_game_achievements')) . '</td>
 						  </tr>';
@@ -78,29 +81,42 @@ class block_game_achievements_edit_form extends block_edit_form {
 			
 			$mform->addElement('html', $html);
 			
-			/*$mform->addElement('header', 'linkheader', get_string('linkeditpage', 'block_game_points'));
+			// Block links
+			$mform->addElement('header', 'linkheader', get_string('configpage_linkheader', 'block_game_achievements'));
 			
 			$sql = "SELECT *
-				FROM {points_link} l
-					INNER JOIN {points_link_processor} p ON l.id = p.linkid
-				WHERE p.processorid = :processorid
-					AND l.blockinstanceid = :blockinstanceid";
+						FROM {achievements_link} l
+							INNER JOIN {achievements_link_processor} p ON l.id = p.linkid
+						WHERE p.processorid = :processorid
+							AND l.blockinstanceid = :blockinstanceid";
 			$params['processorid'] = $USER->id;
 			$params['blockinstanceid'] = $this->block->instance->id;
-			$block_links = $DB->get_records_sql($sql, $params);
+			$links = $DB->get_records_sql($sql, $params);
 			
-			$blocks_info = $DB->get_records('block_instances', array('blockname' => 'game_points'));
+			$blocks_info = $DB->get_records('block_instances', array('blockname' => 'game_achievements'));
 			
-			$html = '<table><tr><th>ID</th><th>Acumular pontos de</th><th>Remover</th></tr>';
-			foreach($block_links as $value)
+			$html = '<table>
+						<tr>
+							<th>' . get_string('configpage_idtableheader', 'block_game_achievements') . '</th>
+							<th>' . get_string('configpage_targettableheader', 'block_game_achievements') . '</th>
+							<th>' . get_string('configpage_deletetableheader', 'block_game_achievements') . '</th>
+						</tr>';
+			foreach($links as $link)
 			{
-				$urlremove = new moodle_url('/blocks/game_points/linkdelete.php', array('courseid' => $COURSE->id, 'linkid' => $value->id));
-				$instance = block_instance('game_points', $blocks_info[$value->accfromblockinstanceid]);
-				$html = $html . '<tr><td>' . $value->id . '</td><td>' . $instance->title . '</td><td>' . html_writer::link($urlremove, 'Remover') . '</td></tr>';
+				$link_delete_url = new moodle_url('/blocks/game_achievements/linkdelete.php', array('courseid' => $COURSE->id, 'linkid' => $link->id));
+				$instance = block_instance('game_achievements', $blocks_info[$link->targetblockinstanceid]);
+				
+				$html .= '<tr>
+							<td>' . $link->id . '</td>
+							<td>' . $instance->title . '</td>
+							<td>' . html_writer::link($link_delete_url, get_string('configpage_deletetableheader', 'block_game_achievements')) . '</td>
+						  </tr>';
 			}
-			$url = new moodle_url('/blocks/game_points/linkadd.php', array('blockid' => $this->block->instance->id, 'courseid' => $COURSE->id));
-			$html = $html . '</table>' . html_writer::link($url, get_string('linkaddpage', 'block_game_points'));
-			$mform->addElement('html', $html);*/
+			
+			$link_add_url = new moodle_url('/blocks/game_achievements/linkadd.php', array('blockinstanceid' => $this->block->instance->id, 'courseid' => $COURSE->id));
+			$html .= '</table>' . html_writer::link($link_add_url, get_string('configpage_linkaddtext', 'block_game_achievements'));
+			
+			$mform->addElement('html', $html);
 		}			
 	}
 }
