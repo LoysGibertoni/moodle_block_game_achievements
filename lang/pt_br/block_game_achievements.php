@@ -47,6 +47,8 @@ $string['achievementadd_header'] = 'Adição de conquista';
 $string['achievementadd_eventtext'] = 'Evento';
 $string['achievementadd_timestext'] = 'Vezes';
 $string['achievementadd_descriptiontext'] = 'Descrição';
+$string['achievementadd_groupmodetext'] = 'Modo grupo';
+$string['achievementadd_allmemberstext'] = 'Todos os membros devem realizar as ações para atingir';
 $string['achievementadd_submit'] = 'Adicionar';
 
 $string['achievementedit_header'] = 'Edição de conquista';
@@ -62,6 +64,9 @@ $string['achievementdelete_submit'] = 'Remover';
 $string['block_times'] = 'vezes';
 $string['block_unlocked_achievements'] = 'Conquistas desbloqueadas';
 $string['block_achievements'] = 'Conquistas';
+$string['block_achievementlist'] = 'Ver mais';
+$string['block_group_unlocked_achievements'] = 'Conquistas de grupo desbloqueadas';
+$string['block_group_achievements'] = 'Conquistas de grupo';
 
 $string['linkadd_header'] = 'Adição de inclusão de conquistas de outros blocos';
 $string['linkadd_targettext'] = 'Incluir conquistas de';
@@ -75,3 +80,8 @@ $string['conditionadd_header'] = 'Adição de condição para conquista';
 $string['conditionadd_typebypointstext'] = 'Por pontos';
 $string['conditionadd_typebyunlocktext'] = 'Por conteúdo desbloqueado';
 $string['conditionadd_typetext'] = 'Tipo de restrição';
+
+$string['achievementlist_header'] = 'Conquistas';
+$string['achievementlist_times'] = 'vezes';
+$string['achievementlist_unlocked'] = 'atingido';
+$string['achievementlist_noachievements'] = 'Não há conquistas para serem exibidas.';

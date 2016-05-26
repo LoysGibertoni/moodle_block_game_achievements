@@ -18,7 +18,7 @@
  * Achievements block event observer implementation.
  *
  * @package    block_game_achievements
- * @copyright  20016 Loys Henrique Saccomano Gibertoni
+ * @copyright  2016 Loys Henrique Saccomano Gibertoni
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -119,6 +119,50 @@ class block_game_achievements_helper {
 				$record->achievementid = $achievement->id;
 				$record->userid = $event->userid;
 				$DB->insert_record('achievements_log', $record);
+				
+				if($achievement->groupmode)
+				{
+					$user_groups = groups_get_all_groups($event->courseid, $event->userid);
+					foreach($user_groups as $user_group)
+					{
+						$group_unlocked_achievement = $DB->record_exists('achievements_groups_log', array('groupid' => $user_group->id, 'achievementid' => $achievement->id));
+						if(!$group_unlocked_achievement)
+						{
+							if($achievement->allmembers)
+							{
+								$all_members_unlocked_achievement = true;
+								$group_members = groups_get_members($user_group->id);
+								foreach($group_members as $group_member)
+								{
+									if($group_member->id != $event->userid)
+									{
+										$unlocked_achievement = $DB->record_exists('achievements_log', array('userid' => $group_member->id, 'achievementid' => $achievement->id));
+										if(!$unlocked_achievement)
+										{
+											$all_members_unlocked_achievement = false;
+											break;
+										}
+									}
+								}
+								
+								if($all_members_unlocked_achievement)
+								{
+									$record = new stdClass();
+									$record->achievementid = $achievement->id;
+									$record->groupid = $user_group->id;
+									$DB->insert_record('achievements_groups_log', $record);
+								}
+							}
+							else
+							{
+								$record = new stdClass();
+								$record->achievementid = $achievement->id;
+								$record->groupid = $user_group->id;
+								$DB->insert_record('achievements_groups_log', $record);
+							}
+						}
+					}
+				}
 			}
 		}
     }

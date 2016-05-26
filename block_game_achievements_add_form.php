@@ -45,6 +45,14 @@ class block_game_achievements_add_form extends moodleform {
 		$mform->addElement('text', 'description', get_string('achievementadd_descriptiontext', 'block_game_achievements'));
 		$mform->setType('description', PARAM_TEXT);
 		
+		$mform->addElement('advcheckbox', 'groupmode', get_string('achievementadd_groupmodetext', 'block_game_achievements'), null, null, array(0, 1));
+		$mform->setType('groupmode', PARAM_INT);
+		$mform->addRule('groupmode', null, 'required', null, 'client');
+		
+		$mform->addElement('advcheckbox', 'allmembers', get_string('achievementadd_allmemberstext', 'block_game_achievements'), null, null, array(0, 1));
+		$mform->setType('allmembers', PARAM_INT);
+		$mform->disabledIf('allmembers', 'groupmode', 'eq', 0);
+		
 		$mform->addElement('header', 'availabilityconditionsheader', get_string('restrictaccess', 'availability'));
 		$mform->addElement('textarea', 'availabilityconditionsjson', get_string('accessrestrictions', 'availability'));
 		\core_availability\frontend::include_all_javascript($COURSE, null);

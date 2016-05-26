@@ -220,4 +220,8 @@ class conditions_info extends \core_availability\info
     protected function set_in_database($availability)
 	{
     }
+	
+	public function get_modinfo() {
+        return get_fast_modinfo($this->course);
+    }
 }

@@ -57,37 +57,67 @@ class block_game_achievements extends block_base
 			
 			$achievements_text_list = array();
 			$unlocked_achievements_text_list = array();
+			$group_achievements_text_list = array();
+			$group_unlocked_achievements_text_list = array();
 			
 			$events = generate_events_list();
 			$achievements = get_achievements($this->instance->id);
 			foreach($achievements as $achievement)
 			{
-				$unlocked_achievement = $DB->record_exists('achievements_log', array('userid' => $USER->id, 'achievementid' => $achievement->id));
-				
-				if($unlocked_achievement)
+				if($achievement->groupmode)
 				{
-					$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-					$unlocked_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
-				}
-				else if(!isset($achievements_text_list[$achievement->event]))
-				{
-					if(!(satisfies_conditions($achievement->conditions, $this->page->course->id, $USER->id) && satisfies_block_conditions($achievement, $USER->id)))
+					$user_groups = groups_get_all_groups($this->page->course->id, $USER->id);
+					$achievement_group_names_list = array();
+					foreach($user_groups as $user_group)
 					{
-						continue;
+						$group_unlocked_achievement = $DB->record_exists('achievements_groups_log', array('groupid' => $user_group->id, 'achievementid' => $achievement->id));
+						if($group_unlocked_achievement)
+						{
+							$achievement_group_names_list[] = $user_group->name;
+						}
 					}
 					
-					$sql = 'SELECT count(*)
-								FROM {achievements_events_log} a
-									INNER JOIN {logstore_standard_log} l ON l.id = a.logid
-								WHERE l.userid = :userid
-									AND a.achievementid = :achievementid';
-					$params['userid'] = $USER->id;
-					$params['achievementid'] = $achievement->id;
+					if(empty($achievement_group_names_list)) // Se nenhum grupo atingiu a conquista
+					{
+						// TODO: agrupar essas conquistas
+						$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
+						$group_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+					}
+					else // Senão
+					{
+						$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
+						$group_unlocked_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . ' (' . implode(', ', $achievement_group_names_list) . ')' . '</li>';
+					}
+				}
+				else
+				{
+					$unlocked_achievement = $DB->record_exists('achievements_log', array('userid' => $USER->id, 'achievementid' => $achievement->id));
 					
-					$times = $DB->count_records_sql($sql, $params);
-					
-					$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-					$achievements_text_list[$achievement->event] = '<li>' . $description . ' ' . $times . '/' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+					if($unlocked_achievement)
+					{
+						$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
+						$unlocked_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+					}
+					else if(!isset($achievements_text_list[$achievement->event]))
+					{
+						if(!(satisfies_conditions($achievement->conditions, $this->page->course->id, $USER->id) && satisfies_block_conditions($achievement, $USER->id)))
+						{
+							continue;
+						}
+						
+						$sql = 'SELECT count(*)
+									FROM {achievements_events_log} a
+										INNER JOIN {logstore_standard_log} l ON l.id = a.logid
+									WHERE l.userid = :userid
+										AND a.achievementid = :achievementid';
+						$params['userid'] = $USER->id;
+						$params['achievementid'] = $achievement->id;
+						
+						$times = $DB->count_records_sql($sql, $params);
+						
+						$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
+						$achievements_text_list[$achievement->event] = '<li>' . $description . ' ' . $times . '/' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+					}
 				}
 			}
 			
@@ -99,8 +129,17 @@ class block_game_achievements extends block_base
 			{
 				$this->content->text .= '<p>' . get_string('block_unlocked_achievements', 'block_game_achievements') . ':<ul>' . implode($unlocked_achievements_text_list) . '</ul></p>';
 			}
+			if(!empty($group_achievements_text_list))
+			{
+				$this->content->text .= '<p>' . get_string('block_group_achievements', 'block_game_achievements') . ':<ul>' . implode($group_achievements_text_list) . '</ul></p>';
+			}
+			if(!empty($group_unlocked_achievements_text_list))
+			{
+				$this->content->text .= '<p>' . get_string('block_group_unlocked_achievements', 'block_game_achievements') . ':<ul>' . implode($group_unlocked_achievements_text_list) . '</ul></p>';
+			}
 			
-			$this->content->footer = '';
+			$achievement_list_url = new moodle_url('/blocks/game_achievements/achievementlist.php', array('blockinstanceid' => $this->instance->id, 'courseid' => $this->page->course->id));
+			$this->content->footer = html_writer::link($achievement_list_url, get_string('block_achievementlist', 'block_game_achievements'));
 		}
 		else // If user has any other role
 		{
