@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016052616;
+$plugin->version   = 2016052700;
 $plugin->requires  = 2011120511;
 $plugin->release   = 'Version for Moodle 2.9 onwards';
 $plugin->component = 'block_game_achievements';

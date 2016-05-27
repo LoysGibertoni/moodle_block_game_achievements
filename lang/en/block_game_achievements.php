@@ -85,3 +85,5 @@ $string['achievementlist_header'] = 'Conquistas';
 $string['achievementlist_times'] = 'vezes';
 $string['achievementlist_unlocked'] = 'atingido';
 $string['achievementlist_noachievements'] = 'Não há conquistas para serem exibidas.';
+$string['achievementlist_achievements'] = 'Individuais';
+$string['achievementlist_group_achievements'] = 'De grupo';

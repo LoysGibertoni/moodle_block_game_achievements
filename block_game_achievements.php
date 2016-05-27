@@ -77,16 +77,15 @@ class block_game_achievements extends block_base
 						}
 					}
 					
-					if(empty($achievement_group_names_list)) // Se nenhum grupo atingiu a conquista
-					{
-						// TODO: agrupar essas conquistas
-						$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-						$group_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
-					}
-					else // Senão
+					if(!empty($achievement_group_names_list)) // Se algum grupo atingiu a conquista
 					{
 						$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
 						$group_unlocked_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . ' (' . implode(', ', $achievement_group_names_list) . ')' . '</li>';
+					}
+					else if(!isset($group_achievements_text_list[$achievement->event])) // Senão
+					{
+						$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
+						$group_achievements_text_list[$achievement->event] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
 					}
 				}
 				else
