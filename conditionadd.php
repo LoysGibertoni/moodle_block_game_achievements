@@ -77,14 +77,16 @@ else if($data = $addform->get_data())
 		{
 			$record->prachievementid = $id;
 		}
-		$record->properator = $data->points_condition_operator;
 		$record->prpoints = $data->points_condition_points;
-		$record->prpointsbetween = isset($data->points_condition_points_between) ? $data->points_condition_points_between : null;
 	}
-	else // Se for restrição por desbloqueio de conteúdo
+	else if($data->condition_type == 1) // Se for restrição por desbloqueio de conteúdo
 	{
 		$record->urmust = $data->unlock_condition_must;
 		$record->urunlocksystemid = $data->unlock_condition_unlocksystemid;
+	}
+	else
+	{
+		$record->arachievementid = $data->achievements_condition_achievementid;
 	}
 
 	$DB->insert_record('achievements_condition', $record);

@@ -26,8 +26,18 @@ require_once('lib.php');
 
 function generate_events_list($showeventname = false)
 {
+	global $DB;
+	
 	$eventsarray = array();
 
+	$eventsarray['\block_game_achievements\event\achievement_reached'] = ($showeventname === true ? (\block_game_achievements\event\achievement_reached::get_name() . " (\block_game_achievements\event\achievement_reached)") : \block_game_achievements\event\achievement_reached::get_name());
+
+	$game_points_installed = $DB->record_exists('block', array('name' => 'game_points'));
+	if($game_points_installed)
+	{
+		$eventsarray['\block_game_points\event\points_earned'] = ($showeventname === true ? (\block_game_points\event\points_earned::get_name() . " (\block_game_points\event\points_earned)") : \block_game_points\event\points_earned::get_name());
+	}
+	
 	$eventslist = report_eventlist_list_generator::get_non_core_event_list();
 	foreach($eventslist as $value)
 	{
@@ -80,12 +90,7 @@ function satisfies_block_conditions($achievement, $userid)
 				}
 				
 				
-				if(($achievement_condition->properator == EQUAL && $user_points == $achievement_condition->prpoints)
-					|| ($achievement_condition->properator == GREATER && $user_points > $achievement_condition->prpoints)
-					|| ($achievement_condition->properator == LESS && $user_points < $achievement_condition->prpoints)
-					|| ($achievement_condition->properator == EQUALORGREATER && $user_points >= $achievement_condition->prpoints)
-					|| ($achievement_condition->properator == EQUALORLESS && $user_points <= $achievement_condition->prpoints)
-					|| ($achievement_condition->properator == BETWEEN && ($user_points >= $achievement_condition->prpoints || $user_points <= $achievement_condition->prpointsbetween))) // Se satisfaz a condição
+				if($user_points >= $achievement_condition->prpoints) // Se satisfaz a condição
 				{
 					if($achievement->connective == OR_CONNECTIVE) // E se o conectivo for OR
 					{
@@ -102,7 +107,7 @@ function satisfies_block_conditions($achievement, $userid)
 					}
 				}
 			}
-			else // Restrição por conteúdo desbloqueado
+			else if($achievement_condition->type == 1) // Restrição por conteúdo desbloqueado
 			{
 				$sql = "SELECT count(u.id) as times
 					FROM
@@ -122,6 +127,26 @@ function satisfies_block_conditions($achievement, $userid)
 				}
 				
 				if(($achievement_condition->urmust && $times > 0) || (!$achievement_condition->urmust && $times == 0)) // Se satisfaz a condição
+				{
+					if($achievement->connective == OR_CONNECTIVE) // E se o conectivo for OR
+					{
+						$satisfies_conditions = true;
+						break;
+					}
+				}
+				else // Se não satisfaz a condição
+				{
+					if($achievement->connective == AND_CONNECTIVE) // E se o conectivo for AND
+					{
+						$satisfies_conditions = false;
+						break;
+					}
+				}
+			}
+			else // Restrição por conquista atingida
+			{
+				$unlocked_achievement = $DB->record_exists('achievements_log', array('userid' => $userid, 'achievementid' => $achievement_condition->arachievementid));
+				if($unlocked_achievement) // Se satisfaz a condição
 				{
 					if($achievement->connective == OR_CONNECTIVE) // E se o conectivo for OR
 					{

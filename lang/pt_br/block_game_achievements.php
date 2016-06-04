@@ -47,14 +47,16 @@ $string['achievementadd_header'] = 'Adição de conquista';
 $string['achievementadd_eventtext'] = 'Evento';
 $string['achievementadd_timestext'] = 'Vezes';
 $string['achievementadd_descriptiontext'] = 'Descrição';
+$string['achievementadd_groupsettingsheader'] = 'Configurações para grupos';
 $string['achievementadd_groupmodetext'] = 'Modo grupo';
-$string['achievementadd_allmemberstext'] = 'Todos os membros devem realizar as ações para atingir';
+$string['achievementadd_allmemberstext'] = 'Todos os membros devem atingir o objetivo para atingir o objetivo grupal';
 $string['achievementadd_submit'] = 'Adicionar';
 
 $string['achievementedit_header'] = 'Edição de conquista';
 $string['achievementedit_eventtext'] = 'Evento';
 $string['achievementedit_timestext'] = 'Vezes';
 $string['achievementedit_descriptiontext'] = 'Descrição';
+$string['achievementedit_groupsettingsheader'] = 'Configurações para grupos';
 $string['achievementedit_submit'] = 'Salvar alterações';
 
 $string['achievementdelete_header'] = 'Remoção de conquista';
@@ -87,3 +89,5 @@ $string['achievementlist_unlocked'] = 'atingido';
 $string['achievementlist_noachievements'] = 'Não há conquistas para serem exibidas.';
 $string['achievementlist_achievements'] = 'Individuais';
 $string['achievementlist_group_achievements'] = 'De grupo';
+
+$string['event_achievementreached'] = 'Conquista atingida';

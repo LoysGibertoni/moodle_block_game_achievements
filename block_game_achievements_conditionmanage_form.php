@@ -54,7 +54,6 @@ class block_game_achievements_conditionmanage_form extends moodleform
 		$mform->addRule('connective', null, 'required', null, 'client');
 		$select->setSelected($connective);
  
-		$operators_array = array(EQUAL => 'iguais a', GREATER => 'maiores que', LESS => 'menores que', EQUALORGREATER => 'maiores ou iguais a', EQUALORLESS => 'menores ou iguais a', BETWEEN => 'entre');
 		$html = '<table>
 					<tr>
 						<th>Descrição</th>
@@ -77,11 +76,10 @@ class block_game_achievements_conditionmanage_form extends moodleform
 				}
 				$instance = block_instance('game_points', $block_info);
 				
-				
 				$url = new moodle_url('/blocks/game_achievements/conditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));
-				$html .= '<tr><td>Os pontos do aluno no' . (isset($condition->prblockid) ? ' bloco ' . $instance->title  : ' sistema de pontos ' . $condition->prpointsystemid . ' (bloco ' . $instance->title . ')' ) . ' devem ser ' . $operators_array[$condition->properator] . ' ' . $condition->prpoints . ($condition->properator == BETWEEN ? (' e ' . $condition->prpointsbetween) : '') . ' pontos' . '</td><td>' . html_writer::link($url, 'Remover') . '</td></tr>';
+				$html .= '<tr><td>Os pontos do aluno no' . (isset($condition->prblockid) ? ' bloco ' . $instance->title  : ' sistema de pontos ' . $condition->prpointsystemid . ' (bloco ' . $instance->title . ')' ) . ' devem ser maiores ou iguais a ' . $condition->prpoints . ' pontos' . '</td><td>' . html_writer::link($url, 'Remover') . '</td></tr>';
 			}
-			else // Restrição por conteúdo desbloqueado
+			else if($condition->type == 1) // Restrição por conteúdo desbloqueado
 			{
 				$unlock_system = $DB->get_record('content_unlock_system', array('id' => $condition->urunlocksystemid));
 				
@@ -94,6 +92,16 @@ class block_game_achievements_conditionmanage_form extends moodleform
 				
 				$url = new moodle_url('/blocks/game_achievements/conditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));
 				$html .= '<tr><td>O aluno ' . ($condition->urmust ? 'deve' : 'não deve') . ' ter ' . ($unlock_system->coursemodulevisibility ? 'desbloqueado' : 'bloqueado') . ' o recurso/atividade ' . $cm->name . ' (bloco ' . $instance->title . ')' . '</td><td>' . html_writer::link($url, 'Remover') . '</td></tr>';
+			}
+			else // Restrição por conquista atingida
+			{
+				$achievement = $DB->get_record('achievements', array('id' => $condition->arachievementid));
+				
+				$block_info = $DB->get_record('block_instances', array('id' => $achievement->blockinstanceid));
+				$instance = block_instance('game_achievements', $block_info);
+				
+				$url = new moodle_url('/blocks/game_points/conditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));
+				$html .= '<tr><td>O aluno deve ter atingido a conquista ' . $achievement->id  . ' (bloco ' . $instance->title . ')</td></tr>';
 			}
 		}
 		$url = new moodle_url('/blocks/game_achievements/conditionadd.php', array('achievementid' => $this->achievementid, 'courseid' => $COURSE->id));

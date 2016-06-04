@@ -31,8 +31,8 @@ class block_game_achievements_add_form extends moodleform {
 	{
 		global $COURSE, $CFG, $DB;
  
-        $mform =& $this->_form;
-        $mform->addElement('header','displayinfo', get_string('achievementadd_header', 'block_game_achievements'));
+		$mform =& $this->_form;
+		$mform->addElement('header','displayinfo', get_string('achievementadd_header', 'block_game_achievements'));
 
 		$eventsarray = generate_events_list(true);
 		$mform->addElement('select', 'event', get_string('achievementadd_eventtext', 'block_game_achievements'), $eventsarray, null);
@@ -45,6 +45,13 @@ class block_game_achievements_add_form extends moodleform {
 		$mform->addElement('text', 'description', get_string('achievementadd_descriptiontext', 'block_game_achievements'));
 		$mform->setType('description', PARAM_TEXT);
 		
+		$mform->addElement('header', 'availabilityconditionsheader', get_string('restrictaccess', 'availability'));
+		$mform->addElement('textarea', 'availabilityconditionsjson', get_string('accessrestrictions', 'availability'));
+		\core_availability\frontend::include_all_javascript($COURSE, null);
+		
+		// Group settings
+		$mform->addElement('header', 'groupsettingsheader', get_string('achievementadd_groupsettingsheader', 'block_game_achievements'));
+		
 		$mform->addElement('advcheckbox', 'groupmode', get_string('achievementadd_groupmodetext', 'block_game_achievements'), null, null, array(0, 1));
 		$mform->setType('groupmode', PARAM_INT);
 		$mform->addRule('groupmode', null, 'required', null, 'client');
@@ -52,10 +59,6 @@ class block_game_achievements_add_form extends moodleform {
 		$mform->addElement('advcheckbox', 'allmembers', get_string('achievementadd_allmemberstext', 'block_game_achievements'), null, null, array(0, 1));
 		$mform->setType('allmembers', PARAM_INT);
 		$mform->disabledIf('allmembers', 'groupmode', 'eq', 0);
-		
-		$mform->addElement('header', 'availabilityconditionsheader', get_string('restrictaccess', 'availability'));
-		$mform->addElement('textarea', 'availabilityconditionsjson', get_string('accessrestrictions', 'availability'));
-		\core_availability\frontend::include_all_javascript($COURSE, null);
 		
 		// Hidden elements
 		$mform->addElement('hidden', 'blockinstanceid');

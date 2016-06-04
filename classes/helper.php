@@ -39,13 +39,15 @@ class block_game_achievements_helper {
 				
 		$achievements = $DB->get_records_sql("SELECT * FROM {achievements} WHERE deleted = ? AND ".$DB->sql_compare_text('event')." = ". $DB->sql_compare_text('?'), array('deleted' => 0, 'event' => $event->eventname));
 		
+		$achievement_reached = false;
+		
 		foreach($achievements as $achievement)
 		{
 			if(!(satisfies_conditions($achievement->conditions, $event->courseid, $event->userid) && satisfies_block_conditions($achievement, $event->userid)))
 			{
 				continue;
 			}
-			
+				
 			$blockcontextid = $DB->get_field('block_instances', 'parentcontextid', array('id' => $achievement->blockinstanceid));
 			if(!$blockcontextid) // If block was deleted
 			{
@@ -119,6 +121,11 @@ class block_game_achievements_helper {
 				$record->achievementid = $achievement->id;
 				$record->userid = $event->userid;
 				$DB->insert_record('achievements_log', $record);
+				if(!$achievement->groupmode)
+				{
+					$achievement_reached = true;
+				}
+				
 				
 				if($achievement->groupmode)
 				{
@@ -151,6 +158,8 @@ class block_game_achievements_helper {
 									$record->achievementid = $achievement->id;
 									$record->groupid = $user_group->id;
 									$DB->insert_record('achievements_groups_log', $record);
+									
+									$achievement_reached = true;
 								}
 							}
 							else
@@ -159,11 +168,26 @@ class block_game_achievements_helper {
 								$record->achievementid = $achievement->id;
 								$record->groupid = $user_group->id;
 								$DB->insert_record('achievements_groups_log', $record);
+								
+								$achievement_reached = true;
 							}
 						}
 					}
 				}
 			}
+		}
+		
+		if($achievement_reached)
+		{
+			$context = context_course::instance($event->courseid);
+			$params = array(
+				'context' => $context
+				/*'other' => array(
+					'logid' => $logid, // Arrumar logid
+				)*/
+			);
+			$event = \block_game_achievements\event\achievement_reached::create($params);
+			$event->trigger();
 		}
     }
 }

@@ -24,13 +24,6 @@
 
 require_once("{$CFG->libdir}/formslib.php");
 
-define("EQUAL", 0);
-define("GREATER", 1);
-define("LESS", 2);
-define("EQUALORGREATER", 3);
-define("EQUALORLESS", 4);
-define("BETWEEN", 5);
-
 class block_game_achievements_conditionadd_form extends moodleform
 {
  
@@ -44,26 +37,29 @@ class block_game_achievements_conditionadd_form extends moodleform
 	{
 		global $DB, $COURSE;
  
-        $mform =& $this->_form;
-        $mform->addElement('header','displayinfo', get_string('conditionadd_header', 'block_game_points'));
+		$mform =& $this->_form;
+		$mform->addElement('header','displayinfo', get_string('conditionadd_header', 'block_game_points'));
 
 		$condition_types = array();
 		$game_points_installed = $DB->record_exists('block', array('name' => 'game_points'));
 		if($game_points_installed)
 		{
-			$condition_types[0] = get_string('conditionadd_typebypointstext', 'block_game_points');
+			$condition_types[0] = get_string('conditionadd_typebypointstext', 'block_game_achievements');
 		}
 		$game_content_unlock_installed = $DB->record_exists('block', array('name' => 'game_content_unlock'));
 		if($game_content_unlock_installed)
 		{
-			$condition_types[1] = get_string('conditionadd_typebyunlocktext', 'block_game_points');
+			$condition_types[1] = get_string('conditionadd_typebyunlocktext', 'block_game_achievements');
 		}
+		$condition_types[2] = get_string('conditionadd_typebyachievementtext', 'block_game_achievements');
 		
 		$mform->addElement('select', 'condition_type', get_string('conditionadd_typetext', 'block_game_points'), $condition_types, null);
 		$mform->addRule('condition_type', null, 'required', null, 'client');
 		
 		if($game_points_installed)
 		{
+			$mform->addElement('html', '<hr></hr>');
+			
 			$points_systems = array();
 			$blocks_info = $DB->get_records('block_instances', array('blockname' => 'game_points'));
 			foreach($blocks_info as $info)
@@ -87,22 +83,16 @@ class block_game_achievements_conditionadd_form extends moodleform
 				}
 			}
 			$mform->addElement('select', 'points_condition_blockorpointsystemid', 'Os pontos do bloco', $points_systems, null);
-			$mform->disabledIf('points_condition_blockorpointsystemid', 'condition_type', 'eq', 1);
-			
-			$operators_array = array(EQUAL => 'Iguais a', GREATER => 'Maiores que', LESS => 'Menores que', EQUALORGREATER => 'Maiores ou iguais a', EQUALORLESS => 'Menores ou iguais a', BETWEEN => 'Entre');
-			$mform->addElement('select', 'points_condition_operator', 'Devem ser', $operators_array, null);
-			$mform->disabledIf('points_condition_operator', 'condition_type', 'eq', 1);
+			$mform->disabledIf('points_condition_blockorpointsystemid', 'condition_type', 'neq', 0);
 			
 			$mform->addElement('text', 'points_condition_points', 'Pontos');
-			$mform->disabledIf('points_condition_points', 'condition_type', 'eq', 1);
-			
-			$mform->addElement('text', 'points_condition_points_between', 'E');
-			$mform->disabledIf('points_condition_points_between', 'condition_type', 'eq', 1);
-			$mform->disabledIf('points_condition_points_between', 'points_condition_operator', 'neq', BETWEEN);
+			$mform->disabledIf('points_condition_points', 'condition_type', 'neq', 0);
 		}
 		
 		if($game_content_unlock_installed)
 		{
+			$mform->addElement('html', '<hr></hr>');
+			
 			$unlock_systems = array();
 			$blocks_info = $DB->get_records('block_instances', array('blockname' => 'game_content_unlock'));
 			foreach($blocks_info as $info)
@@ -130,11 +120,37 @@ class block_game_achievements_conditionadd_form extends moodleform
 			
 			$mform->addElement('select', 'unlock_condition_must', 'O aluno', array(0 => 'Não deve', 1 => 'Deve'), null);
 			$mform->setDefault('unlock_condition_must', 1);
-			$mform->disabledIf('unlock_condition_must', 'condition_type', 'eq', 0);
+			$mform->disabledIf('unlock_condition_must', 'condition_type', 'neq', 1);
 			
 			$mform->addElement('select', 'unlock_condition_unlocksystemid', 'Ter', $unlock_systems, null);
-			$mform->disabledIf('unlock_condition_unlocksystemid', 'condition_type', 'eq', 0);
+			$mform->disabledIf('unlock_condition_unlocksystemid', 'condition_type', 'neq', 1);
 		}
+		
+		// Achievement condition
+		$mform->addElement('html', '<hr></hr>');
+		
+		$achievements = array();
+		$blocks_info = $DB->get_records('block_instances', array('blockname' => 'game_achievements'));
+		foreach($blocks_info as $info)
+		{
+			$instance = block_instance('game_achievements', $info);
+			
+			$sql = 'SELECT id
+						FROM {achievements}
+						WHERE blockinstanceid = :blockinstanceid
+							AND deleted = :deleted';
+							
+			$params['blockinstanceid'] = $instance->instance->id;
+			$params['deleted'] = 0;
+		
+			$achievement_ids = $DB->get_fieldset_sql($sql, $params);
+			foreach($achievement_ids as $achievement_id)
+			{
+				$achievements[$achievement_id] = 'Conquista ' . $achievement_id . ' (bloco ' . $instance->title . ')';
+			}
+		}
+		$mform->addElement('select', 'achievements_condition_achievementid', 'Ter alcançado a', $achievements, null);
+		$mform->disabledIf('achievements_condition_achievementid', 'condition_type', 'neq', 2);
 		
 		$mform->addElement('hidden', 'achievementid');
 		$mform->addElement('hidden', 'courseid');
