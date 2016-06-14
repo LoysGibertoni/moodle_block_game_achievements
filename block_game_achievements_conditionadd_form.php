@@ -85,7 +85,7 @@ class block_game_achievements_conditionadd_form extends moodleform
 			$mform->addElement('select', 'points_condition_blockorpointsystemid', 'Os pontos do bloco', $points_systems, null);
 			$mform->disabledIf('points_condition_blockorpointsystemid', 'condition_type', 'neq', 0);
 			
-			$mform->addElement('text', 'points_condition_points', 'Pontos');
+			$mform->addElement('text', 'points_condition_points', 'Maiores ou iguais a');
 			$mform->disabledIf('points_condition_points', 'condition_type', 'neq', 0);
 		}
 		

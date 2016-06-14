@@ -48,6 +48,14 @@ class block_game_achievements_conditionmanage_form extends moodleform
 		
 		$mform =& $this->_form;
  
+		$achievement = $DB->get_record('achievements', array('id' => $this->achievementid));
+
+		// Conditions
+		$mform->addElement('header', 'availabilityconditionsheader', get_string('restrictaccess', 'availability'));
+		$mform->addElement('textarea', 'availabilityconditionsjson', get_string('accessrestrictions', 'availability'));
+		$mform->setDefault('availabilityconditionsjson', $achievement->conditions);
+		\core_availability\frontend::include_all_javascript($COURSE, null);
+
 		$connective = $DB->get_field('achievements', 'connective', array('id' => $this->achievementid));
 		$connectives_array = array(AND_CONNECTIVE => 'E', OR_CONNECTIVE => 'Ou');
 		$select = $mform->addElement('select', 'connective', 'Conectivo', $connectives_array);
@@ -64,7 +72,7 @@ class block_game_achievements_conditionmanage_form extends moodleform
 		{
 			if($condition->type == 0) // Restrição por pontos
 			{
-				$block_id = null;
+				$block_info = null;
 				if(isset($condition->prpointsystemid))
 				{
 					$block_id = $DB->get_field('points_system', 'blockinstanceid', array('id' => $condition->prpointsystemid));
@@ -74,6 +82,7 @@ class block_game_achievements_conditionmanage_form extends moodleform
 				{
 					$block_info = $DB->get_record('block_instances', array('id' => $condition->prblockid));
 				}
+				print_object($block_info);
 				$instance = block_instance('game_points', $block_info);
 				
 				$url = new moodle_url('/blocks/game_achievements/conditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));
@@ -101,7 +110,7 @@ class block_game_achievements_conditionmanage_form extends moodleform
 				$instance = block_instance('game_achievements', $block_info);
 				
 				$url = new moodle_url('/blocks/game_points/conditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));
-				$html .= '<tr><td>O aluno deve ter atingido a conquista ' . $achievement->id  . ' (bloco ' . $instance->title . ')</td></tr>';
+				$html .= '<tr><td>O aluno deve ter atingido a conquista ' . $achievement->id  . ' (bloco ' . $instance->title . ')</td><td>' . html_writer::link($url, 'Remover') . '</td></tr>';
 			}
 		}
 		$url = new moodle_url('/blocks/game_achievements/conditionadd.php', array('achievementid' => $this->achievementid, 'courseid' => $COURSE->id));

@@ -62,6 +62,7 @@ else if($data = $manageform->get_data())
 {
 	$record = new stdClass();
 	$record->id = $achievementid;
+	$record->conditions = $data->availabilityconditionsjson;
 	$record->connective = $data->connective;
 	
 	$DB->update_record('achievements', $record);

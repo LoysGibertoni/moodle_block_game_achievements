@@ -75,7 +75,7 @@ else if($data = $addform->get_data())
 		}
 		else
 		{
-			$record->prachievementid = $id;
+			$record->prpointsystemid = $id;
 		}
 		$record->prpoints = $data->points_condition_points;
 	}

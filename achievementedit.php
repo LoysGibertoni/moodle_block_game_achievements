@@ -67,10 +67,11 @@ else if($data = $editform->get_data())
 	$DB->update_record('achievements', $record);
 	
 	$blockinstanceid = $DB->get_field('achievements', 'blockinstanceid', array('id' => $achievementid));
+	$conditions = $DB->get_field('achievements', 'conditions', array('id' => $achievementid));
 	$record = new stdClass();
 	$record->event = $data->event;
 	$record->times = $data->times;
-	$record->conditions = $data->availabilityconditionsjson;
+	$record->conditions = $conditions;
 	$record->description = empty($data->description) ? null : $data->description;
 	$record->groupmode =  $data->groupmode;
 	$record->allmembers =  $data->allmembers;

@@ -69,6 +69,13 @@ $string['block_achievements'] = 'Conquistas';
 $string['block_achievementlist'] = 'Ver mais';
 $string['block_group_unlocked_achievements'] = 'Conquistas de grupo desbloqueadas';
 $string['block_group_achievements'] = 'Conquistas de grupo';
+$string['block_conditions_reach'] = 'Atingir';
+$string['block_conditions_points'] = 'pontos';
+$string['block_conditions_on'] = 'no';
+$string['block_conditions_block'] = 'bloco';
+$string['block_conditions_pointsystem'] = 'sistema de pontos';
+$string['block_conditions_achievement'] = 'a conquista';
+$string['block_conditions_and'] = 'e';
 
 $string['linkadd_header'] = 'Adição de inclusão de conquistas de outros blocos';
 $string['linkadd_targettext'] = 'Incluir conquistas de';

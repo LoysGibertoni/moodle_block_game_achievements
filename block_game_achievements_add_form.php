@@ -45,10 +45,6 @@ class block_game_achievements_add_form extends moodleform {
 		$mform->addElement('text', 'description', get_string('achievementadd_descriptiontext', 'block_game_achievements'));
 		$mform->setType('description', PARAM_TEXT);
 		
-		$mform->addElement('header', 'availabilityconditionsheader', get_string('restrictaccess', 'availability'));
-		$mform->addElement('textarea', 'availabilityconditionsjson', get_string('accessrestrictions', 'availability'));
-		\core_availability\frontend::include_all_javascript($COURSE, null);
-		
 		// Group settings
 		$mform->addElement('header', 'groupsettingsheader', get_string('achievementadd_groupsettingsheader', 'block_game_achievements'));
 		
