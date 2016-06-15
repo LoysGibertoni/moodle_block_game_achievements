@@ -82,7 +82,7 @@ class block_game_achievements_conditionmanage_form extends moodleform
 				{
 					$block_info = $DB->get_record('block_instances', array('id' => $condition->prblockid));
 				}
-				print_object($block_info);
+				
 				$instance = block_instance('game_points', $block_info);
 				
 				$url = new moodle_url('/blocks/game_achievements/conditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));

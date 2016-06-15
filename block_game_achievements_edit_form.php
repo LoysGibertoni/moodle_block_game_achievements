@@ -69,6 +69,13 @@ class block_game_achievements_edit_form extends moodleform {
 		$mform->setType('allmembers', PARAM_INT);
 		$mform->setDefault('allmembers', $achievement->allmembers);
 		$mform->disabledIf('allmembers', 'groupmode', 'eq', 0);
+
+		$options = array(SEPARATEGROUPS => get_string('groupsseparate'),
+						 VISIBLEGROUPS  => get_string('groupsvisible'));
+		$mform->addElement('select', 'groupvisibility', get_string('groupmode', 'group'), $options, SEPARATEGROUPS);
+		//$mform->addHelpButton('groupvisibility', 'groupmode', 'group');
+		$mform->setDefault('groupvisibility', $achievement->groupvisibility);
+		$mform->disabledIf('groupvisibility', 'groupmode', 'eq', 0);
 		
 		// Hidden elements
 		$mform->addElement('hidden', 'courseid');

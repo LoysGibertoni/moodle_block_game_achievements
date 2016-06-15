@@ -64,26 +64,39 @@ class block_game_achievements_list_form extends moodleform {
 		{
 			if($achievement->groupmode)
 			{
-				$user_groups = groups_get_all_groups($courseid, $USER->id);
-				$achievement_group_names_list = array();
-				foreach($user_groups as $user_group)
+				$groups = null;
+				if($achievement->groupvisibility == VISIBLEGROUPS)
 				{
-					$group_unlocked_achievement = $DB->record_exists('achievements_groups_log', array('groupid' => $user_group->id, 'achievementid' => $achievement->id));
+					$groups = groups_get_all_groups($courseid);
+				}
+				else
+				{
+					$groups = groups_get_all_groups($courseid, $USER->id);
+				}
+				
+				$user_group_unlocked_achievement = false;
+				$achievement_group_names_list = array();
+				foreach($groups as $group)
+				{
+					$group_unlocked_achievement = $DB->record_exists('achievements_groups_log', array('groupid' => $group->id, 'achievementid' => $achievement->id));
 					if($group_unlocked_achievement)
 					{
-						$achievement_group_names_list[] = $user_group->name;
+						if(groups_is_member($group->id, $USER->id))
+						{
+							$user_group_unlocked_achievement = true;
+						}
+						$achievement_group_names_list[] = $group->name;
 					}
 				}
 				
-				if(empty($achievement_group_names_list)) // Se nenhum grupo atingiu a conquista
+				if(in_array($achievement->event, block_game_achievements::$resource_events))
 				{
-					$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-					$group_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+					$group_achievements_text_list[] = '<li>' . block_game_achievements::get_block_conditions_text($achievement) . (!empty($achievement_group_names_list) ? ' (' . implode(', ', $achievement_group_names_list) . ')' : '') . ($user_group_unlocked_achievement ? ' (' . get_string('achievementlist_unlocked', 'block_game_achievements') . ')' : '') . '</li>';
 				}
-				else // Senão
+				else
 				{
 					$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-					$group_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . ' (' . implode(', ', $achievement_group_names_list) . ')' . ' (' . get_string('achievementlist_unlocked', 'block_game_achievements') . ')'  . '</li>';
+					$group_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . (!empty($achievement_group_names_list) ? ' (' . implode(', ', $achievement_group_names_list) . ')' : '') . ($user_group_unlocked_achievement ? ' (' . get_string('achievementlist_unlocked', 'block_game_achievements') . ')' : '') . '</li>';
 				}
 			}
 			else
@@ -91,8 +104,15 @@ class block_game_achievements_list_form extends moodleform {
 				$unlocked_achievement = $DB->record_exists('achievements_log', array('userid' => $USER->id, 'achievementid' => $achievement->id));
 				if($unlocked_achievement)
 				{
-					$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-					$achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('achievementlist_times', 'block_game_achievements') . ' (' . get_string('achievementlist_unlocked', 'block_game_achievements') . ')' . '</li>';
+					if(in_array($achievement->event, block_game_achievements::$resource_events))
+					{
+						$achievements_text_list[] = '<li>' . block_game_achievements::get_block_conditions_text($achievement) . ' (' . get_string('achievementlist_unlocked', 'block_game_achievements') . ')' . '</li>';
+					}
+					else
+					{
+						$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
+						$achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('achievementlist_times', 'block_game_achievements') . ' (' . get_string('achievementlist_unlocked', 'block_game_achievements') . ')' . '</li>';
+					}
 				}
 				else
 				{
@@ -106,8 +126,15 @@ class block_game_achievements_list_form extends moodleform {
 					
 					$times = $DB->count_records_sql($sql, $params);
 					
-					$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-					$achievements_text_list[] = '<li>' . $description . ' ' . $times . '/' . $achievement->times . ' ' . get_string('achievementlist_times', 'block_game_achievements') . '</li>';
+					if(in_array($achievement->event, block_game_achievements::$resource_events))
+					{
+						$achievements_text_list[] = '<li>' . block_game_achievements::get_block_conditions_text($achievement) . '</li>';
+					}
+					else
+					{
+						$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
+						$achievements_text_list[] = '<li>' . $description . ' ' . $times . '/' . $achievement->times . ' ' . get_string('achievementlist_times', 'block_game_achievements') . '</li>';
+					}
 				}
 			}
 		}

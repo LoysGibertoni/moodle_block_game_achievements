@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/blocks/game_achievements/lib.php');
 
 class block_game_achievements extends block_base
 {
-	private static $resource_events = array('\block_game_points\event\points_earned', '\block_game_achievements\event\achievement_reached');
+	public static $resource_events = array('\block_game_points\event\points_earned', '\block_game_achievements\event\achievement_reached');
 
     public function init()
 	{
@@ -67,18 +67,32 @@ class block_game_achievements extends block_base
 			{
 				if($achievement->groupmode)
 				{
-					$user_groups = groups_get_all_groups($this->page->course->id, $USER->id);
-					$achievement_group_names_list = array();
-					foreach($user_groups as $user_group)
+					$groups = null;
+					if($achievement->groupvisibility == VISIBLEGROUPS)
 					{
-						$group_unlocked_achievement = $DB->record_exists('achievements_groups_log', array('groupid' => $user_group->id, 'achievementid' => $achievement->id));
+						$groups = groups_get_all_groups($this->page->course->id);
+					}
+					else
+					{
+						$groups = groups_get_all_groups($this->page->course->id, $USER->id);
+					}
+
+					$user_group_unlocked_achievement = false;
+					$achievement_group_names_list = array();
+					foreach($groups as $group)
+					{
+						$group_unlocked_achievement = $DB->record_exists('achievements_groups_log', array('groupid' => $group->id, 'achievementid' => $achievement->id));
 						if($group_unlocked_achievement)
 						{
-							$achievement_group_names_list[] = $user_group->name;
+							if(groups_is_member($group->id, $USER->id))
+							{
+								$user_group_unlocked_achievement = true;
+							}
+							$achievement_group_names_list[] = $group->name;
 						}
 					}
-					
-					if(!empty($achievement_group_names_list)) // Se algum grupo atingiu a conquista
+				
+					if($user_group_unlocked_achievement) // Se algum grupo do usuário atingiu a conquista
 					{
 						if(in_array($achievement->event, self::$resource_events))
 						{
@@ -94,12 +108,12 @@ class block_game_achievements extends block_base
 					{
 						if(in_array($achievement->event, self::$resource_events))
 						{
-							$group_achievements_text_list[] = '<li>' . $this->get_block_conditions_text($achievement) . '</li>';
+							$group_achievements_text_list[] = '<li>' . $this->get_block_conditions_text($achievement) . (!empty($achievement_group_names_list) ? ' (' . implode(', ', $achievement_group_names_list) . ')' : '') . '</li>';
 						}
 						else
 						{
 							$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-							$group_achievements_text_list[$achievement->event] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+							$group_achievements_text_list[$achievement->event] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . (!empty($achievement_group_names_list) ? ' (' . implode(', ', $achievement_group_names_list) . ')' : '') . '</li>';
 						}
 					}
 				}
@@ -193,7 +207,7 @@ class block_game_achievements extends block_base
 		}
 	}
 
-	private static function get_block_conditions_text($achievement)
+	public static function get_block_conditions_text($achievement)
 	{
 		global $DB;
 
