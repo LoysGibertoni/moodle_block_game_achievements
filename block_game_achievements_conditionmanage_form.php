@@ -56,6 +56,8 @@ class block_game_achievements_conditionmanage_form extends moodleform
 		$mform->setDefault('availabilityconditionsjson', $achievement->conditions);
 		\core_availability\frontend::include_all_javascript($COURSE, null);
 
+		$mform->addElement('html', '<hr></hr>');
+
 		$connective = $DB->get_field('achievements', 'connective', array('id' => $this->achievementid));
 		$connectives_array = array(AND_CONNECTIVE => 'E', OR_CONNECTIVE => 'Ou');
 		$select = $mform->addElement('select', 'connective', 'Conectivo', $connectives_array);

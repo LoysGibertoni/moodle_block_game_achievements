@@ -67,11 +67,11 @@ class block_game_achievements_list_form extends moodleform {
 				$groups = null;
 				if($achievement->groupvisibility == VISIBLEGROUPS)
 				{
-					$groups = groups_get_all_groups($courseid);
+					$groups = groups_get_all_groups($courseid, 0, $achievement->groupingid);
 				}
 				else
 				{
-					$groups = groups_get_all_groups($courseid, $USER->id);
+					$groups = groups_get_all_groups($courseid, $USER->id, $achievement->groupingid);
 				}
 				
 				$user_group_unlocked_achievement = false;

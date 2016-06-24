@@ -68,6 +68,7 @@ else if($data = $addform->get_data())
 	$record->groupmode =  $data->groupmode;
 	$record->allmembers =  $data->allmembers;
 	$record->groupvisibility = empty($data->groupvisibility) ? null : $data->groupvisibility;
+	$record->groupingid = empty($data->groupingid) ? 0 : $data->groupingid;
 	$record->blockinstanceid = $blockinstanceid;
 	$record->deleted = 0;
 	$achievementid = $DB->insert_record('achievements', $record);

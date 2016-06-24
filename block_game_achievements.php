@@ -70,11 +70,11 @@ class block_game_achievements extends block_base
 					$groups = null;
 					if($achievement->groupvisibility == VISIBLEGROUPS)
 					{
-						$groups = groups_get_all_groups($this->page->course->id);
+						$groups = groups_get_all_groups($this->page->course->id, 0, $achievement->groupingid);
 					}
 					else
 					{
-						$groups = groups_get_all_groups($this->page->course->id, $USER->id);
+						$groups = groups_get_all_groups($this->page->course->id, $USER->id, $achievement->groupingid);
 					}
 
 					$user_group_unlocked_achievement = false;

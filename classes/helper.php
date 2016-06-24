@@ -129,7 +129,7 @@ class block_game_achievements_helper {
 				
 				if($achievement->groupmode)
 				{
-					$user_groups = groups_get_all_groups($event->courseid, $event->userid);
+					$user_groups = groups_get_all_groups($event->courseid, $event->userid, $achievement->groupingid);
 					foreach($user_groups as $user_group)
 					{
 						$group_unlocked_achievement = $DB->record_exists('achievements_groups_log', array('groupid' => $user_group->id, 'achievementid' => $achievement->id));

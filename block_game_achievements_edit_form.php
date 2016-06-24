@@ -77,6 +77,19 @@ class block_game_achievements_edit_form extends moodleform {
 		$mform->setDefault('groupvisibility', $achievement->groupvisibility);
 		$mform->disabledIf('groupvisibility', 'groupmode', 'eq', 0);
 		
+		$options = array();
+		if ($groupings = $DB->get_records('groupings', array('courseid'=>$COURSE->id))) {
+			foreach ($groupings as $grouping) {
+				$options[$grouping->id] = format_string($grouping->name);
+			}
+		}
+		core_collator::asort($options);
+		$options = array(0 => get_string('none')) + $options;
+		$mform->addElement('select', 'groupingid', get_string('grouping', 'group'), $options);
+		//$mform->addHelpButton('groupingid', 'grouping', 'group');
+		$mform->setDefault('groupingid', $achievement->groupingid);
+		$mform->disabledIf('groupingid', 'groupmode', 'eq', 0);
+
 		// Hidden elements
 		$mform->addElement('hidden', 'courseid');
 		$mform->setType('courseid', PARAM_INT);
