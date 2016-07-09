@@ -30,7 +30,7 @@ class block_game_achievements_helper {
 
 	public static function observer(\core\event\base $event)
 	{
-        global $DB;
+		global $DB;
 		
         if(!is_student($event->userid))
 		{
@@ -39,7 +39,8 @@ class block_game_achievements_helper {
 				
 		$achievements = $DB->get_records_sql("SELECT * FROM {achievements} WHERE deleted = ? AND ".$DB->sql_compare_text('event')." = ". $DB->sql_compare_text('?'), array('deleted' => 0, 'event' => $event->eventname));
 		
-		$achievement_reached = false;
+		$achievementids_reached = array();
+		$achievementuserids_reached = array();
 		
 		foreach($achievements as $achievement)
 		{
@@ -123,7 +124,8 @@ class block_game_achievements_helper {
 				$DB->insert_record('achievements_log', $record);
 				if(!$achievement->groupmode)
 				{
-					$achievement_reached = true;
+					$achievementids_reached[] = $achievement->id;
+					$achievementuserids_reached[] = array($event->userid);
 				}
 				
 				
@@ -135,10 +137,11 @@ class block_game_achievements_helper {
 						$group_unlocked_achievement = $DB->record_exists('achievements_groups_log', array('groupid' => $user_group->id, 'achievementid' => $achievement->id));
 						if(!$group_unlocked_achievement)
 						{
+							$group_members = groups_get_members($user_group->id);
+							
 							if($achievement->allmembers)
 							{
 								$all_members_unlocked_achievement = true;
-								$group_members = groups_get_members($user_group->id);
 								foreach($group_members as $group_member)
 								{
 									if($group_member->id != $event->userid)
@@ -159,7 +162,8 @@ class block_game_achievements_helper {
 									$record->groupid = $user_group->id;
 									$DB->insert_record('achievements_groups_log', $record);
 									
-									$achievement_reached = true;
+									$achievementids_reached[] = $achievement->id;
+									$achievementuserids_reached[] = array_keys($group_members);
 								}
 							}
 							else
@@ -169,7 +173,8 @@ class block_game_achievements_helper {
 								$record->groupid = $user_group->id;
 								$DB->insert_record('achievements_groups_log', $record);
 								
-								$achievement_reached = true;
+								$achievementids_reached[] = $achievement->id;
+								$achievementuserids_reached[] = array_keys($group_members);
 							}
 						}
 					}
@@ -177,14 +182,15 @@ class block_game_achievements_helper {
 			}
 		}
 		
-		if($achievement_reached)
+		if(!empty($achievementids_reached))
 		{
 			$context = context_course::instance($event->courseid);
 			$params = array(
-				'context' => $context
-				/*'other' => array(
-					'logid' => $logid, // Arrumar logid
-				)*/
+				'context' => $context,
+				'other' => array(
+					'achievementids' => $achievementids_reached,
+					'achievementuserids' => $achievementuserids_reached
+				)
 			);
 			$event = \block_game_achievements\event\achievement_reached::create($params);
 			$event->trigger();
