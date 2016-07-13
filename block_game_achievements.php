@@ -135,7 +135,7 @@ class block_game_achievements extends block_base
 					}
 					else if(!isset($achievements_text_list[$achievement->event]))
 					{
-						if(!(satisfies_conditions($achievement->conditions, $this->page->course->id, $USER->id) && (in_array($achievement->event, self::$resource_events) || satisfies_block_conditions($achievement, $USER->id))))
+						if(!(satisfies_conditions($achievement->conditions, $this->page->course->id, $USER->id) && (in_array($achievement->event, self::$resource_events) || satisfies_block_conditions($achievement, $this->page->course->id, $USER->id))))
 						{
 							continue;
 						}
@@ -230,7 +230,7 @@ class block_game_achievements extends block_base
 				}
 				$instance = block_instance('game_points', $block_info);
 				
-				$conditions_text[] = get_string('block_conditions_reach', 'block_game_achievements') . ' ' . $achievement_block_condition->prpoints . ' ' . get_string('block_conditions_points', 'block_game_achievements') . ' ' . get_string('block_conditions_on', 'block_game_achievements') . ' ' . (isset($achievement_block_condition->prblockid) ? get_string('block_conditions_block', 'block_game_achievements') . ' ' . $instance->title  : get_string('block_conditions_pointsystem', 'block_game_achievements') . ' ' . $achievement_block_condition->prpointsystemid . ' (' . get_string('block_conditions_block', 'block_game_achievements') . ' ' . $instance->title . ')' );
+				$conditions_text[] = get_string('block_conditions_reach', 'block_game_achievements') . ' ' . $achievement_block_condition->prpoints . ' ' . get_string('block_conditions_points', 'block_game_achievements') . ' (' . ($achievement_block_condition->prgrupal ? get_string('block_conditions_grupal', 'block_game_achievements') : get_string('block_conditions_individual', 'block_game_achievements')) . ') ' . get_string('block_conditions_on', 'block_game_achievements') . ' ' . (isset($achievement_block_condition->prblockid) ? get_string('block_conditions_block', 'block_game_achievements') . ' ' . $instance->title  : get_string('block_conditions_pointsystem', 'block_game_achievements') . ' ' . $achievement_block_condition->prpointsystemid . ' (' . get_string('block_conditions_block', 'block_game_achievements') . ' ' . $instance->title . ')' );
 			}
 			else if($achievement_block_condition->type == 1) // By content unlock
 			{

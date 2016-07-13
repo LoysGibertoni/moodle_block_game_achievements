@@ -87,6 +87,12 @@ class block_game_achievements_conditionadd_form extends moodleform
 			
 			$mform->addElement('text', 'points_condition_points', 'Maiores ou iguais a');
 			$mform->disabledIf('points_condition_points', 'condition_type', 'neq', 0);
+
+			$achievement_info = $DB->get_record('achievements', array('id' => $this->achievementid));
+			if($achievement_info->groupmode)
+			{
+				$mform->addElement('advcheckbox', 'points_condition_grupal', 'Grupal', null, null, array(0, 1));
+			}
 		}
 		
 		if($game_content_unlock_installed)

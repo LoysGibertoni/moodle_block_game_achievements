@@ -64,7 +64,7 @@ function satisfies_conditions($conditions, $courseid, $userid)
 	return true;
 }
 
-function satisfies_block_conditions($achievement, $userid)
+function satisfies_block_conditions($achievement, $courseid, $userid)
 {
 	global $DB;
 	$achievement_conditions = $DB->get_records('achievements_condition', array('achievementid' => $achievement->id));
@@ -79,18 +79,48 @@ function satisfies_block_conditions($achievement, $userid)
 		{
 			if($achievement_condition->type == 0) // Restrição por pontos
 			{
-				$user_points = null;
+				$points = 0;
 				if(isset($achievement_condition->prblockid)) // Se a restrição for por pontos no bloco
 				{
-					$user_points = get_points($achievement_condition->prblockid, $userid);
+					if($achievement_condition->prgrupal)
+					{
+						$user_groups = groups_get_all_groups($courseid, $userid, $achievement->groupingid);
+						foreach($user_groups as $user_group)
+						{
+							$group_points = get_block_group_points($achievement_condition->prblockid, $user_group->id);
+							if($group_points > $points)
+							{
+								$points = $group_points;
+							}
+						}
+					}
+					else
+					{
+						$points = get_points($achievement_condition->prblockid, $userid);
+					}
 				}
 				else // Se a restrição for por pontos em um sistema de pontos específico
 				{
-					$user_points = get_points_system_points($achievement_condition->prpointsystemid, $userid);
+					if($achievement_condition->prgrupal)
+					{
+						$user_groups = groups_get_all_groups($courseid, $userid, $achievement->groupingid);
+						foreach($user_groups as $user_group)
+						{
+							$group_points = get_points_system_group_points($achievement_condition->prpointsystemid, $user_group->id);
+							if($group_points > $points)
+							{
+								$points = $group_points;
+							}
+						}
+					}
+					else
+					{
+						$points = get_points_system_points($achievement_condition->prpointsystemid, $userid);
+					}
 				}
 				
 				
-				if($user_points >= $achievement_condition->prpoints) // Se satisfaz a condição
+				if($points >= $achievement_condition->prpoints) // Se satisfaz a condição
 				{
 					if($achievement->connective == OR_CONNECTIVE) // E se o conectivo for OR
 					{

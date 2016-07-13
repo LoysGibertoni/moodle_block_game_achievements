@@ -78,6 +78,7 @@ else if($data = $addform->get_data())
 			$record->prpointsystemid = $id;
 		}
 		$record->prpoints = $data->points_condition_points;
+		$record->prgrupal = empty($data->points_condition_grupal) ? 0 : $data->points_condition_grupal;
 	}
 	else if($data->condition_type == 1) // Se for restrição por desbloqueio de conteúdo
 	{

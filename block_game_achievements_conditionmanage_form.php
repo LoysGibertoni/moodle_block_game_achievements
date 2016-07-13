@@ -88,7 +88,7 @@ class block_game_achievements_conditionmanage_form extends moodleform
 				$instance = block_instance('game_points', $block_info);
 				
 				$url = new moodle_url('/blocks/game_achievements/conditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));
-				$html .= '<tr><td>Os pontos do aluno no' . (isset($condition->prblockid) ? ' bloco ' . $instance->title  : ' sistema de pontos ' . $condition->prpointsystemid . ' (bloco ' . $instance->title . ')' ) . ' devem ser maiores ou iguais a ' . $condition->prpoints . ' pontos' . '</td><td>' . html_writer::link($url, 'Remover') . '</td></tr>';
+				$html .= '<tr><td>Os pontos ' . ($condition->prgrupal ? 'grupais' : 'individuais') . ' do aluno no' . (isset($condition->prblockid) ? ' bloco ' . $instance->title  : ' sistema de pontos ' . $condition->prpointsystemid . ' (bloco ' . $instance->title . ')' ) . ' devem ser maiores ou iguais a ' . $condition->prpoints . ' pontos' . '</td><td>' . html_writer::link($url, 'Remover') . '</td></tr>';
 			}
 			else if($condition->type == 1) // Restrição por conteúdo desbloqueado
 			{
