@@ -96,24 +96,24 @@ class block_game_achievements extends block_base
 					{
 						if(in_array($achievement->event, self::$resource_events))
 						{
-							$group_unlocked_achievements_text_list[] = '<li>' . $this->get_block_conditions_text($achievement) . ' (' . implode(', ', $achievement_group_names_list) . ')' . '</li>';
+							$group_unlocked_achievements_text_list[] = '<li>' . (isset($achievement->name) ? $achievement->name . ': ' : '') . $this->get_block_conditions_text($achievement) . ' (' . implode(', ', $achievement_group_names_list) . ')' . '</li>';
 						}
 						else
 						{
 							$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-							$group_unlocked_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . ' (' . implode(', ', $achievement_group_names_list) . ')' . '</li>';
+							$group_unlocked_achievements_text_list[] = '<li>' . (isset($achievement->name) ? $achievement->name . ': ' : '') . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . ' (' . implode(', ', $achievement_group_names_list) . ')' . '</li>';
 						}
 					}
 					else if(!isset($group_achievements_text_list[$achievement->event])) // Senão
 					{
 						if(in_array($achievement->event, self::$resource_events))
 						{
-							$group_achievements_text_list[] = '<li>' . $this->get_block_conditions_text($achievement) . (!empty($achievement_group_names_list) ? ' (' . implode(', ', $achievement_group_names_list) . ')' : '') . '</li>';
+							$group_achievements_text_list[] = '<li>'. (isset($achievement->name) ? $achievement->name . ': ' : '')  . $this->get_block_conditions_text($achievement) . (!empty($achievement_group_names_list) ? ' (' . implode(', ', $achievement_group_names_list) . ')' : '') . '</li>';
 						}
 						else
 						{
 							$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-							$group_achievements_text_list[$achievement->event] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . (!empty($achievement_group_names_list) ? ' (' . implode(', ', $achievement_group_names_list) . ')' : '') . '</li>';
+							$group_achievements_text_list[$achievement->event] = '<li>' . (isset($achievement->name) ? $achievement->name . ': ' : '') . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . (!empty($achievement_group_names_list) ? ' (' . implode(', ', $achievement_group_names_list) . ')' : '') . '</li>';
 						}
 					}
 				}
@@ -125,12 +125,12 @@ class block_game_achievements extends block_base
 					{
 						if(in_array($achievement->event, self::$resource_events))
 						{
-							$unlocked_achievements_text_list[] = '<li>' . $this->get_block_conditions_text($achievement) . '</li>';
+							$unlocked_achievements_text_list[] = '<li>' . (isset($achievement->name) ? $achievement->name . ': ' : '') . $this->get_block_conditions_text($achievement) . '</li>';
 						}
 						else
 						{
 							$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-							$unlocked_achievements_text_list[] = '<li>' . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+							$unlocked_achievements_text_list[] = '<li>' . (isset($achievement->name) ? $achievement->name . ': ' : '') . $description . ' ' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
 						}
 					}
 					else if(!isset($achievements_text_list[$achievement->event]))
@@ -152,12 +152,12 @@ class block_game_achievements extends block_base
 						
 						if(in_array($achievement->event, self::$resource_events))
 						{
-							$achievements_text_list[] = '<li>' . $this->get_block_conditions_text($achievement) . '</li>';
+							$achievements_text_list[] = '<li>' . (isset($achievement->name) ? $achievement->name . ': ' : '') . $this->get_block_conditions_text($achievement) . '</li>';
 						}
 						else
 						{
 							$description = is_null($achievement->description) ? $events[$achievement->event] : $achievement->description;
-							$achievements_text_list[$achievement->event] = '<li>' . $description . ' ' . $times . '/' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
+							$achievements_text_list[$achievement->event] = '<li>' . (isset($achievement->name) ? $achievement->name . ': ' : '') . $description . ' ' . $times . '/' . $achievement->times . ' ' . get_string('block_times', 'block_game_achievements') . '</li>';
 						}
 					}
 				}
@@ -243,7 +243,7 @@ class block_game_achievements extends block_base
 				$block_info = $DB->get_record('block_instances', array('id' => $condition_achievement->blockinstanceid));
 				$instance = block_instance('game_achievements', $block_info);
 				
-				$conditions_text[] = get_string('block_conditions_reach', 'block_game_achievements') . ' ' . get_string('block_conditions_achievement', 'block_game_achievements') . ' ' . $condition_achievement->id  . ' (' . get_string('block_conditions_block', 'block_game_achievements') . ' ' . $instance->title . ')';
+				$conditions_text[] = get_string('block_conditions_reach', 'block_game_achievements') . ' ' . get_string('block_conditions_achievement', 'block_game_achievements') . ' ' . (isset($condition_achievement->name) ? $condition_achievement->name . ' (' . $condition_achievement->id . ')' : $condition_achievement->id)   . ' (' . get_string('block_conditions_block', 'block_game_achievements') . ' ' . $instance->title . ')';
 			}
 
 		}

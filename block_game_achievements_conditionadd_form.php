@@ -152,7 +152,8 @@ class block_game_achievements_conditionadd_form extends moodleform
 			$achievement_ids = $DB->get_fieldset_sql($sql, $params);
 			foreach($achievement_ids as $achievement_id)
 			{
-				$achievements[$achievement_id] = 'Conquista ' . $achievement_id . ' (bloco ' . $instance->title . ')';
+				$achievement = $DB->get_record('achievements', array('id' => $achievement_id));
+				$achievements[$achievement_id] = 'Conquista ' . (isset($achievement->name) ? $achievement->name . ' (' . $achievement_id . ')' : $achievement_id) . ' (bloco ' . $instance->title . ')';
 			}
 		}
 		$mform->addElement('select', 'achievements_condition_achievementid', 'Ter alcançado a', $achievements, null);

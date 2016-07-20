@@ -61,6 +61,7 @@ if($addform->is_cancelled())
 else if($data = $addform->get_data())
 {
 	$record = new stdClass();
+	$record->name = empty($data->name) ? null : $data->name;
 	$record->event = $data->event;
 	$record->times = $data->times;
 	$record->conditions = '{"op":"&","c":[],"showc":[]}'; // No conditions by default

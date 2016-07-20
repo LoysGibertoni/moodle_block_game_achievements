@@ -69,6 +69,7 @@ else if($data = $editform->get_data())
 	$blockinstanceid = $DB->get_field('achievements', 'blockinstanceid', array('id' => $achievementid));
 	$conditions = $DB->get_field('achievements', 'conditions', array('id' => $achievementid));
 	$record = new stdClass();
+	$record->name = empty($data->name) ? null : $data->name;
 	$record->event = $data->event;
 	$record->times = $data->times;
 	$record->conditions = $conditions;

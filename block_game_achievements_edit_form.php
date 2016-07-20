@@ -43,6 +43,10 @@ class block_game_achievements_edit_form extends moodleform {
         $mform =& $this->_form;
         $mform->addElement('header','displayinfo', get_string('achievementedit_header', 'block_game_achievements'));
 
+		$mform->addElement('text', 'name', get_string('achievementedit_nametext', 'block_game_achievements'));
+		$mform->setType('name', PARAM_TEXT);
+		$mform->setDefault('name', $achievement->name);
+
 		$eventsarray = generate_events_list(true);
 		$select = $mform->addElement('select', 'event', get_string('achievementedit_eventtext', 'block_game_achievements'), $eventsarray, null);
 		$mform->addRule('event', null, 'required', null, 'client');

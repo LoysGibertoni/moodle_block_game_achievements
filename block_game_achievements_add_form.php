@@ -34,6 +34,9 @@ class block_game_achievements_add_form extends moodleform {
 		$mform =& $this->_form;
 		$mform->addElement('header','displayinfo', get_string('achievementadd_header', 'block_game_achievements'));
 
+		$mform->addElement('text', 'name', get_string('achievementadd_nametext', 'block_game_achievements'));
+		$mform->setType('name', PARAM_TEXT);
+
 		$eventsarray = generate_events_list(true);
 		$mform->addElement('select', 'event', get_string('achievementadd_eventtext', 'block_game_achievements'), $eventsarray, null);
 		$mform->addRule('event', null, 'required', null, 'client');

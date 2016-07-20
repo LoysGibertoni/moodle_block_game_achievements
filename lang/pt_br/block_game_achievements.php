@@ -32,6 +32,7 @@ $string['configpage_nav'] = 'Configuções do bloco conquistas';
 $string['configpage_header'] = 'Edição de conquistas';
 $string['configpage_titletext'] = 'Título do bloco';
 $string['configpage_idtableheader'] = 'ID'; // Remove
+$string['configpage_nametableheader'] = 'Nome';
 $string['configpage_eventtableheader'] = 'Evento';
 $string['configpage_timestableheader'] = 'Vezes';
 $string['configpage_descriptiontableheader'] = 'Descrição';
@@ -44,6 +45,7 @@ $string['configpage_targettableheader'] = 'Incluir conquistas de';
 $string['configpage_linkaddtext'] = 'Adicionar inclusão de conquistas de outros blocos';
 
 $string['achievementadd_header'] = 'Adição de conquista';
+$string['achievementadd_nametext'] = 'Nome';
 $string['achievementadd_eventtext'] = 'Evento';
 $string['achievementadd_timestext'] = 'Vezes';
 $string['achievementadd_descriptiontext'] = 'Descrição';
@@ -53,6 +55,7 @@ $string['achievementadd_allmemberstext'] = 'Todos os membros devem atingir o obj
 $string['achievementadd_submit'] = 'Adicionar';
 
 $string['achievementedit_header'] = 'Edição de conquista';
+$string['achievementedit_nametext'] = 'Nome';
 $string['achievementedit_eventtext'] = 'Evento';
 $string['achievementedit_timestext'] = 'Vezes';
 $string['achievementedit_descriptiontext'] = 'Descrição';

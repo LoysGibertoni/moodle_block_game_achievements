@@ -52,6 +52,7 @@ class block_game_achievements_edit_form extends block_edit_form {
 			$html = '<table>
 						<tr>
 							<th>' . get_string('configpage_idtableheader', 'block_game_achievements') . '</th>
+							<th>' . get_string('configpage_nametableheader', 'block_game_achievements') . '</th>
 							<th>' . get_string('configpage_eventtableheader', 'block_game_achievements') . '</th>
 							<th>' . get_string('configpage_timestableheader', 'block_game_achievements') . '</th>
 							<th>' . get_string('configpage_descriptiontableheader', 'block_game_achievements') . '</th>
@@ -67,6 +68,7 @@ class block_game_achievements_edit_form extends block_edit_form {
 				
 				$html .= '<tr>
 							<td>' . $achievement->id . '</td>
+							<td>' . $achievement->name . '</td>
 							<td>' . $eventsarray[$achievement->event] . '</td>
 							<td>' . $achievement->times . '</td>
 							<td>' . $achievement->description . '</td>
