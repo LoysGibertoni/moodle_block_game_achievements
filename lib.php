@@ -18,7 +18,7 @@
  * Achievements block functions definitions.
  *
  * @package    block_game_achievements
- * @copyright  20016 Loys Henrique Saccomano Gibertoni
+ * @copyright  2016 Loys Henrique Saccomano Gibertoni
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,6 +38,12 @@ function generate_events_list($showeventname = false)
 		$eventsarray['\block_game_points\event\points_earned'] = ($showeventname === true ? (\block_game_points\event\points_earned::get_name() . " (\block_game_points\event\points_earned)") : \block_game_points\event\points_earned::get_name());
 	}
 	
+	$game_content_unlock_installed = $DB->record_exists('block', array('name' => 'game_content_unlock'));
+	if($game_content_unlock_installed)
+	{
+		$eventsarray['\block_game_content_unlock\event\content_unlocked'] = ($showeventname === true ? (\block_game_content_unlock\event\content_unlocked::get_name() . " (\block_game_content_unlock\event\content_unlocked)") : \block_game_content_unlock\event\content_unlocked::get_name());
+	}
+
 	$eventslist = report_eventlist_list_generator::get_non_core_event_list();
 	foreach($eventslist as $value)
 	{

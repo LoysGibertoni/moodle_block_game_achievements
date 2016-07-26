@@ -111,7 +111,7 @@ class block_game_achievements_conditionmanage_form extends moodleform
 				$block_info = $DB->get_record('block_instances', array('id' => $achievement->blockinstanceid));
 				$instance = block_instance('game_achievements', $block_info);
 				
-				$url = new moodle_url('/blocks/game_points/conditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));
+				$url = new moodle_url('/blocks/game_achievements/conditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));
 				$html .= '<tr><td>O aluno deve ter atingido a conquista ' . (isset($achievement->name) ? $achievement->name . ' (' . $achievement->id . ')' : $achievement->id)  . ' (bloco ' . $instance->title . ')</td><td>' . html_writer::link($url, 'Remover') . '</td></tr>';
 			}
 		}

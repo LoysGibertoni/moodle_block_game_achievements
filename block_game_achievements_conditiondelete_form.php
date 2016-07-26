@@ -30,14 +30,14 @@ class block_game_achievements_conditiondelete_form extends moodleform
     function definition()
 	{
 		$mform =& $this->_form;
-        $mform->addElement('header','displayinfo', get_string('conditiondeleteheading', 'block_game_achievements'));
+        $mform->addElement('header','displayinfo', get_string('conditiondelete_header', 'block_game_achievements'));
 		
-		$mform->addElement('html', get_string('conditiondeletemessage', 'block_game_achievements'));
+		$mform->addElement('html', get_string('conditiondelete_message', 'block_game_achievements'));
 		
 		$mform->addElement('hidden', 'courseid');
 		$mform->addElement('hidden', 'conditionid');
 		
-		$this->add_action_buttons(true, get_string('conditiondeletebutton', 'block_game_achievements'));
+		$this->add_action_buttons(true, get_string('conditiondelete_button', 'block_game_achievements'));
     }
 	
 }

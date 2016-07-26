@@ -24,6 +24,8 @@
 
 require_once("{$CFG->libdir}/formslib.php");
 require_once('lib.php');
+require_once($CFG->dirroot . '/blocks/moodleblock.class.php');
+require_once('block_game_achievements.php');
 
 class block_game_achievements_list_form extends moodleform {
  

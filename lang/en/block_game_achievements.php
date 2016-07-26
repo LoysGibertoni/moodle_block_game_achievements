@@ -81,6 +81,11 @@ $string['block_conditions_block'] = 'bloco';
 $string['block_conditions_pointsystem'] = 'sistema de pontos';
 $string['block_conditions_achievement'] = 'a conquista';
 $string['block_conditions_and'] = 'e';
+$string['block_conditions_have'] = 'Ter';
+$string['block_conditions_havenot'] = 'Não ter';
+$string['block_conditions_unlocked'] = 'desbloqueado';
+$string['block_conditions_locked'] = 'bloqueado';
+$string['block_conditions_resource'] = 'o recurso/atividade';
 
 $string['linkadd_header'] = 'Adição de inclusão de conquistas de outros blocos';
 $string['linkadd_targettext'] = 'Incluir conquistas de';
@@ -93,7 +98,14 @@ $string['linkdelete_submit'] = 'Remover';
 $string['conditionadd_header'] = 'Adição de condição para conquista';
 $string['conditionadd_typebypointstext'] = 'Por pontos';
 $string['conditionadd_typebyunlocktext'] = 'Por conteúdo desbloqueado';
+$string['conditionadd_typebyachievementtext'] = 'Por conquista';
 $string['conditionadd_typetext'] = 'Tipo de restrição';
+
+$string['conditiondelete_header'] = 'Remoção de condição para conquista';
+$string['conditiondelete_message'] = 'Tem certeza que deseja remover a condição?';
+$string['conditiondelete_button'] = 'Remover';
+
+$string['conditionmanage_header'] = 'Gerenciamento de condições para conquista';
 
 $string['achievementlist_header'] = 'Conquistas';
 $string['achievementlist_times'] = 'vezes';

@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/blocks/game_achievements/lib.php');
 
 class block_game_achievements extends block_base
 {
-	public static $resource_events = array('\block_game_points\event\points_earned', '\block_game_achievements\event\achievement_reached');
+	public static $resource_events = array('\block_game_points\event\points_earned', '\block_game_achievements\event\achievement_reached', '\block_game_content_unlock\event\content_unlocked');
 
     public function init()
 	{
@@ -234,7 +234,17 @@ class block_game_achievements extends block_base
 			}
 			else if($achievement_block_condition->type == 1) // By content unlock
 			{
-				// TODO
+				$condition_unlock_system= $DB->get_record('content_unlock_system', array('id' => $achievement_block_condition->urunlocksystemid));
+
+				$course = $DB->get_record('course', array('id' => $this->page->course->id));
+				$info = get_fast_modinfo($course);
+				$cm = $info->get_cm($condition_unlock_system->coursemoduleid);
+
+				$block_info = $DB->get_record('block_instances', array('id' => $condition_unlock_system->blockinstanceid));
+				$instance = block_instance('game_content_unlock', $block_info);
+				
+				
+				$conditions_text[] = ($achievement_block_condition->urmust ? get_string('block_conditions_have', 'block_game_achievements') : get_string('block_conditions_havenot', 'block_game_achievements')) . ' ' . ($condition_unlock_system->coursemodulevisibility ? get_string('block_conditions_unlocked', 'block_game_achievements') : get_string('block_conditions_locked', 'block_game_achievements')) . ' ' . get_string('block_conditions_resource', 'block_game_achievements') . ' ' . $cm->name . ' (' . get_string('block_conditions_block', 'block_game_achievements') . ' ' . $instance->title . ')';
 			}
 			else // By achievement reached
 			{
@@ -248,7 +258,7 @@ class block_game_achievements extends block_base
 
 		}
 
-		return implode(' ' . get_string('block_conditions_and', 'block_game_achievements') . ' ', $conditions_text);
+		return implode(' ' . ($achievement->connective == AND_CONNECTIVE ? get_string('block_conditions_and', 'block_game_achievements') : get_string('block_conditions_or', 'block_game_achievements')) . ' ', $conditions_text);
 	}
 }
 
