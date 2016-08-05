@@ -23,6 +23,7 @@
  */
 
 require_once('lib.php');
+require_once($CFG->dirroot . '/blocks/game_points/lib.php');
 
 function generate_events_list($showeventname = false)
 {
