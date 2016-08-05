@@ -86,7 +86,15 @@ else if($data = $editform->get_data())
 	$record->achievementid = $new_achievementid;
 	$record->processorid = $USER->id;
 	$DB->insert_record('achievements_processor', $record);
-	
+
+	$achievement_conditions = $DB->get_records('achievements_condition', array('achievementid' => $achievementid));
+	foreach($achievement_conditions as $achievement_condition)
+	{
+		unset($achievement_condition->id);
+		$achievement_condition->achievementid = $new_achievementid;
+		$DB->insert_record('achievements_condition', $achievement_condition);
+	}
+
     $url = new moodle_url('/course/view.php', array('id' => $courseid, 'sesskey' => sesskey(), 'bui_editid' => $blockinstanceid));
     redirect($url);
 }
