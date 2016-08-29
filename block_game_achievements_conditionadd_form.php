@@ -60,29 +60,21 @@ class block_game_achievements_conditionadd_form extends moodleform
 		{
 			$mform->addElement('html', '<hr></hr>');
 			
-			$points_systems = array();
+			$points_systems_list = array();
 			$blocks_info = $DB->get_records('block_instances', array('blockname' => 'game_points'));
 			foreach($blocks_info as $info)
 			{
 				$instance = block_instance('game_points', $info);
 				
-				$points_systems['block::' . $instance->instance->id] = '- Bloco ' . $instance->title;
+				$points_systems_list['block::' . $instance->instance->id] = '- Bloco ' . $instance->title;
 				
-				$sql = 'SELECT id
-							FROM {points_system}
-							WHERE blockinstanceid = :blockinstanceid
-								AND deleted = :deleted';
-								
-				$params['blockinstanceid'] = $instance->instance->id;
-				$params['deleted'] = 0;
-			
-				$point_system_ids = $DB->get_fieldset_sql($sql, $params);
-				foreach($point_system_ids as $point_system_id)
+				$points_systems = $DB->get_records('points_system', array('blockinstanceid' => $instance->instance->id, 'deleted' => 0));
+				foreach($points_systems as $points_system)
 				{
-					$points_systems['pointsystem::' . $point_system_id] = '&nbsp;&nbsp;&nbsp;&nbsp;Sistema de pontos ' . $point_system_id;
+					$points_systems_list['pointsystem::' . $points_system->id] = '&nbsp;&nbsp;&nbsp;&nbsp;Sistema de pontos ' . (isset($points_system->name) ? $points_system->name . ' (' . $points_system->id . ')' : $points_system->id);
 				}
 			}
-			$mform->addElement('select', 'points_condition_blockorpointsystemid', 'Os pontos do bloco', $points_systems, null);
+			$mform->addElement('select', 'points_condition_blockorpointsystemid', 'Os pontos do bloco', $points_systems_list, null);
 			$mform->disabledIf('points_condition_blockorpointsystemid', 'condition_type', 'neq', 0);
 			
 			$mform->addElement('text', 'points_condition_points', 'Maiores ou iguais a');
