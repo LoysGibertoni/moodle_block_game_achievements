@@ -55,6 +55,7 @@ class block_game_achievements extends block_base
 		if(is_student($USER->id)) // If user is a student
 		{
 			$this->content->text = '';
+			$this->content->footer = '';
 			
 			$achievements_text_list = array();
 			$unlocked_achievements_text_list = array();
@@ -180,8 +181,11 @@ class block_game_achievements extends block_base
 				$this->content->text .= '<p>' . get_string('block_group_unlocked_achievements', 'block_game_achievements') . ':<ul>' . implode($group_unlocked_achievements_text_list) . '</ul></p>';
 			}
 			
-			$achievement_list_url = new moodle_url('/blocks/game_achievements/achievementlist.php', array('blockinstanceid' => $this->instance->id, 'courseid' => $this->page->course->id));
-			$this->content->footer = html_writer::link($achievement_list_url, get_string('block_achievementlist', 'block_game_achievements'));
+			if(!empty($this->content->text))
+			{
+				$achievement_list_url = new moodle_url('/blocks/game_achievements/achievementlist.php', array('blockinstanceid' => $this->instance->id, 'courseid' => $this->page->course->id));
+				$this->content->footer = html_writer::link($achievement_list_url, get_string('block_achievementlist', 'block_game_achievements'));
+			}
 		}
 		else // If user has any other role
 		{

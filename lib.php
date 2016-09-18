@@ -71,6 +71,41 @@ function satisfies_conditions($conditions, $courseid, $userid)
 	return true;
 }
 
+function satisfies_advanced_conditions($achievement, $event)
+{
+	global $DB;
+
+	$validate = $achievement->advconnective == AND_CONNECTIVE ? true : false;
+
+	$conditions = $DB->get_records('achievements_advcondition', array('achievementid' => $achievement->id));
+	foreach($conditions as $condition)
+	{
+		$sql = 'SELECT COUNT(*) ' . $condition->whereclause;
+		foreach($event as $property => $value)
+		{
+			$sql = str_replace("[" . $property . "]", is_null($value) ? "NULL" : "'" . $value . "'", $sql);
+		}
+		$count = $DB->count_records_sql($sql);
+
+		if(($condition->trueif == 0 && $count == 0) || ($condition->trueif == 1 && $count >= 1) || ($condition->trueif == 2 && $count >= $condition->count)) // If satisfies
+		{
+			if($achievement->advconnective == OR_CONNECTIVE) // If it uses an OR connective
+			{
+				return true;
+			}
+		}
+		else // If doesn't satisfy
+		{
+			if($achievement->advconnective == AND_CONNECTIVE) // If it uses an AND connective
+			{
+				return false;
+			}
+		}
+	}
+
+	return $validate;
+}
+
 function satisfies_block_conditions($achievement, $courseid, $userid)
 {
 	global $DB;

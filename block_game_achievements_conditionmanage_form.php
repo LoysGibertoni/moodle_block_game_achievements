@@ -121,7 +121,50 @@ class block_game_achievements_conditionmanage_form extends moodleform
 		$html .= '</table>' . html_writer::link($url, 'Adicionar restrição');
 		
 		$mform->addElement('html', $html);
+
+		// Advanced conditions
+		$mform->addElement('html', '<hr></hr>');
+
+		$advconnective = $DB->get_field('achievements', 'advconnective', array('id' => $this->achievementid));
+		$select = $mform->addElement('select', 'advconnective', 'Conectivo de restrições avançadas', $connectives_array);
+		$mform->addRule('advconnective', null, 'required', null, 'client');
+		$select->setSelected($advconnective);
  
+		$html = '<table>
+					<tr>
+						<th>' . get_string('conditionmanagesql', 'block_game_achievements') . '</th>
+						<th>' . get_string('conditionmanagetrueif', 'block_game_achievements') . '</th>
+						<th>' . get_string('conditionmanagedelete', 'block_game_achievements') . '</th>
+					</tr>';
+		$conditions = $DB->get_records('achievements_advcondition', array('achievementid' => $this->achievementid));
+		foreach($conditions as $condition)
+		{
+			$url = new moodle_url('/blocks/game_achievements/advancedconditiondelete.php', array('conditionid' => $condition->id, 'courseid' => $COURSE->id));
+			
+			if($condition->trueif == 0)
+			{
+				$trueif = get_string('advancedconditionaddtrueifzero', 'block_game_achievements');
+			}
+			else if($condition->trueif == 1)
+			{
+				$trueif = get_string('advancedconditionaddtrueifnotzero', 'block_game_achievements');
+			}
+			else
+			{
+				$trueif = get_string('advancedconditionaddtrueifegthan', 'block_game_achievements') . ' ' . $condition->count;
+			}
+			
+			$html .= '<tr>
+					 	<td>' . get_string('advancedconditionaddselect', 'block_game_achievements') . ' ' . $condition->whereclause . '</td>
+						 <td>' . $trueif . '</td>
+						<td>' . html_writer::link($url, get_string('conditionmanagedelete', 'block_game_achievements')) . '</td>
+					 </tr>';
+		}
+		$url = new moodle_url('/blocks/game_achievements/advancedconditionadd.php', array('achievementid' => $this->achievementid, 'courseid' => $COURSE->id));
+		$html .= '</table>' . html_writer::link($url, get_string('conditionmanageadd', 'block_game_achievements'));
+
+		$mform->addElement('html', $html);
+
         $mform->addElement('hidden', 'achievementid');
 		$mform->addElement('hidden', 'courseid');
 		

@@ -105,7 +105,23 @@ $string['conditiondelete_header'] = 'Remoção de condição para conquista';
 $string['conditiondelete_message'] = 'Tem certeza que deseja remover a condição?';
 $string['conditiondelete_button'] = 'Remover';
 
-$string['conditionmanage_header'] = 'Gerenciamento de condições para conquista';
+$string['conditionmanageheader'] = 'Gerenciamento de condições para conquista';
+$string['conditionmanagesql'] = 'SQL';
+$string['conditionmanagetrueif'] = 'Verdadeiro se';
+$string['conditionmanagedelete'] = 'Remover';
+$string['conditionmanageadd'] = 'Adicionar restrição avançada';
+
+$string['advancedconditionaddheading'] = 'Adicionar restrição avançada';
+$string['advancedconditionaddbutton'] = 'Adicionar';
+$string['advancedconditionaddselect'] = 'SELECT COUNT(*)';
+$string['advancedconditionaddtrueif'] = 'Verdadeiro se';
+$string['advancedconditionaddtrueifzero'] = 'COUNT = 0';
+$string['advancedconditionaddtrueifnotzero'] = 'COUNT >= 1';
+$string['advancedconditionaddtrueifegthan'] = 'COUNT >=';
+$string['advancedconditionaddcount'] = 'Contagem';
+$string['advancedconditiondeleteheading'] = 'Remover restrição';
+$string['advancedconditiondeletemessage'] = 'Tem certeza que deseja remover a restrição?';
+$string['advancedconditiondeletebutton'] = 'Remover';
 
 $string['achievementlist_header'] = 'Conquistas';
 $string['achievementlist_times'] = 'vezes';
