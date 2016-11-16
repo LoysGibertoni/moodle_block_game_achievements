@@ -68,14 +68,15 @@ class block_game_achievements extends block_base
 			{
 				if($achievement->groupmode)
 				{
-					$groups = null;
+					$groups = groups_get_all_groups($this->page->course->id, $USER->id, $achievement->groupingid);
+					if(empty($groups))
+					{
+						continue;
+					}
+					
 					if($achievement->groupvisibility == VISIBLEGROUPS)
 					{
 						$groups = groups_get_all_groups($this->page->course->id, 0, $achievement->groupingid);
-					}
-					else
-					{
-						$groups = groups_get_all_groups($this->page->course->id, $USER->id, $achievement->groupingid);
 					}
 
 					$user_group_unlocked_achievement = false;
@@ -93,6 +94,11 @@ class block_game_achievements extends block_base
 						}
 					}
 				
+					if(!$user_group_unlocked_achievement && !satisfies_conditions($achievement->conditions, $this->page->course->id, $USER->id))
+					{
+						continue;
+					}
+					
 					if($user_group_unlocked_achievement) // Se algum grupo do usuário atingiu a conquista
 					{
 						if(in_array($achievement->event, self::$resource_events))
